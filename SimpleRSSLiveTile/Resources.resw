@@ -174,4 +174,44 @@
   &lt;/visual&gt;
 &lt;/tile&gt;</value>
   </data>
+  <data name="ErrorTileXML" xml:space="preserve">
+    <value>&lt;tile&gt;
+  &lt;visual displayName="Simple RSS Live Tile"&gt;
+
+    &lt;binding template="TileMedium"&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="body" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
+          &lt;text hint-style="captionsubtle"  hint-wrap="true" &gt;Wrong URL ?&lt;/text&gt;
+          
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileWide" branding="nameAndLogo"&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="subtitle" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;&lt;/text&gt;
+          &lt;text hint-style="captionsubtle" hint-wrap="true" &gt;Wrong URL ?&lt;/text&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileLarge" branding="nameAndLogo"&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="base" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
+          &lt;text hint-style="captionsubtle"&gt;Wrong URL ?&lt;/text&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+    &lt;/binding&gt;
+
+  &lt;/visual&gt;
+&lt;/tile&gt;</value>
+  </data>
 </root>

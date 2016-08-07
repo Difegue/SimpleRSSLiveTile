@@ -40,8 +40,12 @@ namespace BackgroundTasks
                 client.BypassCacheOnRetrieve = true;
                 client.SetRequestHeader(customHeaderName, customHeaderValue);
 
+                //Do this for all feeds we have if they're pinned.
+                FeedDataSource feedDB = new FeedDataSource();
+                feedDB.
+
                 //Get feed URL from App 
-                String feedUrl = (String)localSettings.Values["RSSFeed"];
+                //String feedUrl = (String)localSettings.Values["RSSFeed"];
 
                 // Download the feed. 
                 Uri feedUri = new Uri(feedUrl);
@@ -61,8 +65,10 @@ namespace BackgroundTasks
 
             if (feed == null)
             {
-                System.ArgumentException argEx = new System.ArgumentException("Not a valid Feed");
-                throw argEx;
+                //Build a bogus tile saying the feed is not valid. 
+
+                //System.ArgumentException argEx = new System.ArgumentException("Not a valid Feed");
+                //throw argEx;
             }
 
             // Create a tile update manager for the specified syndication feed.

@@ -36,6 +36,13 @@ namespace SimpleRSSLiveTile
             this.Suspending += OnSuspending;
         }
 
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            //When launched through a notification, we do absolutely fucking nothing different
+            LaunchActivatedEventArgs e = args as LaunchActivatedEventArgs;
+            OnLaunched(e);
+        }
+
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
@@ -76,7 +83,7 @@ namespace SimpleRSSLiveTile
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                rootFrame.Navigate(typeof(NewMainPage), e.Arguments);
             }
             // Ensure the current window is active
             Window.Current.Activate();
