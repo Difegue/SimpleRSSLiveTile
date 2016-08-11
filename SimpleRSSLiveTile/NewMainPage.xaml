@@ -147,13 +147,13 @@
             <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed"/>
             <AppBarButton Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed"/>
             
-            <AppBarButton Label="Donate" Click="OpenDonate">
+            <AppBarButton x:Name="donateButton" Label="Donate" Click="OpenDonate">
                 <AppBarButton.Icon>
                     <FontIcon Margin="0,-3,0,0" FontFamily="Candara" Glyph="$$$"  />
                 </AppBarButton.Icon>
             </AppBarButton>
 
-            <AppBarButton Icon="Tag" Label="About this App" Click="AboutSplash"/>
+            <AppBarButton Icon="Tag" Label="About" Click="AboutSplash"/>
 
 
         </CommandBar>

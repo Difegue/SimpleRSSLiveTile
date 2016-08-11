@@ -7,8 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Store;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -25,10 +27,33 @@ namespace SimpleRSSLiveTile
     {
         private FeedViewModel _lastSelectedFeed;
         private ObservableCollection<FeedViewModel> FeedList;
+        private LicenseInformation doshMoneyDollar;
 
         public NewMainPage()
         {
             this.InitializeComponent();
+
+        }
+
+        //IAP initialization, unused.
+        private async void initializeIAP()
+        {
+            // Get the license info
+            // The next line is commented out for testing.
+            // doshMoneyDollar = CurrentApp.LicenseInformation;
+
+            // The next line is commented out for production/release.  
+            StorageFile proxyFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/WindowsStoreProxy.xml"));
+            await CurrentAppSimulator.ReloadSimulatorAsync(proxyFile);
+
+            doshMoneyDollar = CurrentAppSimulator.LicenseInformation;
+
+            if (doshMoneyDollar.ProductLicenses["donationFromTomodachi"].IsActive)
+            {
+                donateButton.Label = "Arigato !";
+                donateButton.Icon = new SymbolIcon(Symbol.SolidStar);
+            }
+
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -56,9 +81,7 @@ namespace SimpleRSSLiveTile
             MasterListView.ItemsSource = FeedList;
             UpdateForVisualState(AdaptiveStates.CurrentState);
 
-            // Don't play a content transition for first Feed load.
-            // Sometimes, this content will be animated as part of the page transition.
-            //DisableContentTransitions();
+            //initializeIAP();
         }
 
         private void UpdateFeedList()
@@ -168,25 +191,9 @@ namespace SimpleRSSLiveTile
             }
 
             EntranceNavigationTransitionInfo.SetIsTargetElement(MasterListView, isNarrow);
-            /*if (DetailContentPresenter != null)
-            {
-                EntranceNavigationTransitionInfo.SetIsTargetElement(DetailContentPresenter, !isNarrow);
-            }*/
+
         }
 
-        /*private void EnableContentTransitions()
-        {
-            DetailContentPresenter.ContentTransitions.Clear();
-            DetailContentPresenter.ContentTransitions.Add(new EntranceThemeTransition());
-        }
-
-        private void DisableContentTransitions()
-        {
-            if (DetailContentPresenter != null)
-            {
-                DetailContentPresenter.ContentTransitions.Clear();
-            }
-        }*/
 
         private void LayoutRoot_Loaded(object sender, RoutedEventArgs e)
         {

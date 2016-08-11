@@ -11,9 +11,9 @@ using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Syndication;
 
-namespace SimpleRSSLiveTile.Data
+namespace BackgroundTasks.Data
 {
-    public class Feed
+    public sealed class Feed
     {
         // Although most HTTP servers do not require User-Agent header, others will reject the request or return 
         // a different response if this header is missing. Use SetRequestHeader() to add custom headers. 
@@ -55,57 +55,6 @@ namespace SimpleRSSLiveTile.Data
             isValid = false;
         }
 
-        //Pins Tile to Start Menu.
-        public async Task<bool> pinTile()
-        {
-            //Create the secondary tile
-            string tileActivationArguments = feedId + " was pinned at = " + DateTime.Now.ToLocalTime().ToString();
-            string displayName = "RSS Live Tile for "+feedTitle;
-
-            // Prepare package images for our tile to be pinned 
-            Uri square150x150Logo = new Uri("ms-appx:///Assets/Square150x150Logo.scale-200.png");
-            Uri wide310x150Logo = new Uri("ms-appx:///Assets/Wide310x150Logo.scale-200.png");
-            Uri square310x310Logo = new Uri("ms-appx:///Assets/Square310x310Logo.scale-200.png");
-            Uri square44x44Logo = new Uri("ms-appx:///Assets/Square44x44Logo.scale-200.png");
-            
-            TileSize newTileDesiredSize = TileSize.Square150x150;
-
-            //The Secondary Tile unique ID is the Feed ID, makes checking easy.
-            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString(),
-                                                            displayName,
-                                                            tileActivationArguments,
-                                                            square150x150Logo,
-                                                            newTileDesiredSize);
-
-            //Setting visual elements
-            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = false;
-            secondaryTile.VisualElements.ShowNameOnWide310x150Logo = true;
-            secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = true;
-
-            secondaryTile.VisualElements.Wide310x150Logo = wide310x150Logo;
-            secondaryTile.VisualElements.Square310x310Logo = square310x310Logo;
-            secondaryTile.VisualElements.Square44x44Logo = square44x44Logo;
-            
-            secondaryTile.VisualElements.ForegroundText = ForegroundText.Light;
-            
-            await secondaryTile.RequestCreateForSelectionAsync(new Windows.Foundation.Rect());
-
-
-            //Save the unique tile ID and immediately try updating it with the XML we have
-            updateTile();
-
-            return true;
-        }
-
-        //Unpins Tile from Start Menu.
-        public async void unpinTile()
-        {
-            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString());
-
-            if (isTilePinned())
-                await secondaryTile.RequestDeleteForSelectionAsync(new Windows.Foundation.Rect());
-
-        }
 
         //Updates this feed's live tile, if it exists.
         public async void updateTile()
@@ -117,23 +66,6 @@ namespace SimpleRSSLiveTile.Data
             TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
             secondaryTileUpdater.Update(tileNotification);
         }
-
-        //Get the RSS Feed's title, or the URL if it doesn't have one.
-        public async Task<String> getFeedTitle()
-        {
-
-            SyndicationFeed feed = await getFeedData();
-            if (feed != null)
-            {
-                String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
-                isValid = true;
-                return feedTitleText;
-            }
-
-            isValid = false;
-            return "Invalid RSS Feed";
-        }
-
 
         //Get RSS feed from URL, if it's incorrect return null
         private async Task<SyndicationFeed> getFeedData()

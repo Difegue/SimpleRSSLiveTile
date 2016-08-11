@@ -26,7 +26,7 @@
                             <LineBreak/> 
                             to indicate the position of a RSS feed's items. 
                             <LineBreak/> 
-                            (# = order of your item in the feed, up to 4)
+                            (# = order of your item in the feed, up to 3)
                             <LineBreak/> <LineBreak/>
                             When you're done, hit Save ! 
                             <LineBreak/>
@@ -84,7 +84,10 @@
         </StackPanel>
         
         <ProgressBar x:Name="Progress" Width="130" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="0,0,10,10" HorizontalAlignment="Left" Visibility="Collapsed" />
-        <TextBlock x:Name="greetingOutput" Margin="0,0,0,22"/>
+        <StackPanel Orientation="Horizontal" Visibility="Collapsed" x:Name="outputStackPanel">
+            <SymbolIcon x:Name="symbolOutput" Symbol="Accept" />
+            <TextBlock x:Name="greetingOutput" Margin="10,16,0,22" Text="asasas" FontSize="18"/>
+        </StackPanel>
     </StackPanel>
 
 </Page>

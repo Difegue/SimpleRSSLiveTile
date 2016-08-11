@@ -108,6 +108,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Feed.cs" />
+    <Compile Include="Data\FeedDataSource.cs" />
     <Compile Include="RSSFeedBackgroundTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

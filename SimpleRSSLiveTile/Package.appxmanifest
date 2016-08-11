@@ -15,9 +15,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SimpleRSSLiveTile.App">
-      <uap:VisualElements DisplayName="Simple RSS Live Tile" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="SimpleRSSLiveTile" BackgroundColor="purple">
+      <uap:VisualElements DisplayName="RSS Live Tiles" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="SimpleRSSLiveTile" BackgroundColor="purple">
         <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\Untitled.png" />
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Simple RSS Live Tile" Square310x310Logo="Assets\Square310x310Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="RSS Live Tiles" Square310x310Logo="Assets\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square310x310Logo" />
           </uap:ShowNameOnTiles>

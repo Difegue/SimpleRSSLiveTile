@@ -71,8 +71,8 @@ namespace SimpleRSSLiveTile
         //This doesn't pin the feed to the start menu.
         private async void SaveFeed(object sender, RoutedEventArgs e)
         {
-            Progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
+            Progress.Visibility = Visibility.Visible;
+            
             //Test Feed.
             Feed f = await BuildFeedFromPage();
 
@@ -80,6 +80,9 @@ namespace SimpleRSSLiveTile
             Boolean validXML = f.testTileXML();
             if (!validXML)
             {
+                outputStackPanel.Visibility = Visibility.Visible;
+                symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
+                symbolOutput.Symbol = Symbol.Cancel;
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
                 greetingOutput.Text = "Invalid XML.";
                 Progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
@@ -91,39 +94,100 @@ namespace SimpleRSSLiveTile
                 //We're good, save the feed and enable pinning.
                 feedDB.SetFeed(f);
 
-                
-
-                greetingOutput.Text = "Feed Saved ! You can now pin it.";
-
-                if (f.isTileValid())
-                { 
-                    if (f.isTilePinned())
-                        unpinButton.Visibility = Visibility.Visible;
-                    else
-                        pinButton.Visibility = Visibility.Visible;
-                }
-
+                outputStackPanel.Visibility = Visibility.Visible;
+                symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
+                symbolOutput.Symbol = Symbol.Accept;
+          
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
-                Progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
+                //Maybe we're saving a tile already pinned, in which case we'll just update it
+                if (feedDB.GetFeedById(f.getId()).isTilePinned()) 
+                {
+                    greetingOutput.Text = "Feed Saved ! Live Tile will be automatically updated.";
+                    unpinButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    greetingOutput.Text = "Feed Saved ! You can now pin it.";
+                    pinButton.Visibility = Visibility.Visible;
+                }
+       
+                Progress.Visibility = Visibility.Collapsed;
             }
             else
             {
+                outputStackPanel.Visibility = Visibility.Visible;
+                symbolOutput.Symbol = Symbol.Cancel;
+                symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
                 greetingOutput.Text = "Invalid RSS Feed.";
-                Progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                Progress.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void PinFeed(object sender, RoutedEventArgs e)
+        private async void PinFeed(object sender, RoutedEventArgs e)
         {
+            Feed f = await BuildFeedFromPage();
+            Progress.Visibility = Visibility.Visible;
+            
+            //Check if the feed built from the page is valid.
+            //If not, ask the user to save his feed.
+            if (f.isTileValid())
+            {
+                await f.pinTile();
+                //this.RegisterBackgroundTask();
 
-            //this.RegisterBackgroundTask();
+                //Save pinned feed state
+                feedDB.SetFeed(f);
 
+                if (f.isTilePinned())
+                {
+                    outputStackPanel.Visibility = Visibility.Visible;
+                    symbolOutput.Symbol = Symbol.Accept;
+                    symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
+                    greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
+                    greetingOutput.Text = "Feed pinned !"; 
+                    unpinButton.Visibility = Visibility.Visible;
+                    pinButton.Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                outputStackPanel.Visibility = Visibility.Visible;
+                symbolOutput.Symbol = Symbol.Cancel;
+                symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
+                greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
+                greetingOutput.Text = "Please save the modified feed before trying to pin it.";
+                pinButton.Visibility = Visibility.Collapsed;
+            }
+
+            Progress.Visibility = Visibility.Collapsed;
         }
 
-        private void UnpinFeed(object sender, RoutedEventArgs e)
+        private async void UnpinFeed(object sender, RoutedEventArgs e)
         {
+            Feed f = await BuildFeedFromPage();
+            Progress.Visibility = Visibility.Visible;
+           
+            f.unpinTile();
 
+            //Save unpinned feed state
+            feedDB.SetFeed(f);
+
+            if (!f.isTilePinned())
+            {
+                outputStackPanel.Visibility = Visibility.Visible;
+                symbolOutput.Symbol = Symbol.Accept;
+                symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
+                greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
+                greetingOutput.Text = "Feed unpinned.";
+                unpinButton.Visibility = Visibility.Collapsed;
+
+                if (f.isTileValid())
+                    pinButton.Visibility = Visibility.Visible;
+            }
+
+            Progress.Visibility = Visibility.Collapsed;
         }
 
         private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
@@ -196,7 +260,7 @@ namespace SimpleRSSLiveTile
         {
             // Page above us will be our master view.
             // Make sure we are using the "drill out" animation in this transition.
-            if (Frame.BackStackDepth > 0)
+            if (Frame !=null && Frame.BackStackDepth > 0)
                 Frame.GoBack(new DrillInNavigationTransitionInfo());
         }
 
@@ -243,6 +307,12 @@ namespace SimpleRSSLiveTile
                     customTileXMLContent.Text = Feed.TileXML;
                     customTileXML.Visibility = Visibility.Visible;
                 }
+
+                //Check if feed is pinned and set visibility of buttons in consequence
+                if (feedDB.GetFeedById(Feed.Id).isTilePinned())
+                    unpinButton.Visibility = Visibility.Visible;
+                else if (feedDB.GetFeedById(Feed.Id).isTileValid())
+                    pinButton.Visibility = Visibility.Visible;
 
             }
 
