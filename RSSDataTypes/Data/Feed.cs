@@ -2,16 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.Data.Json;
 using Windows.Data.Xml.Dom;
+using Windows.Foundation;
 using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Syndication;
 
-namespace BackgroundTasks.Data
+namespace RSSDataTypes.Data
 {
     public sealed class Feed
     {
@@ -55,16 +59,113 @@ namespace BackgroundTasks.Data
             isValid = false;
         }
 
+        public IAsyncOperation<bool> pinTileAsync()
+        {
+            Task<bool> load = pinTile();
+            IAsyncOperation<bool> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Pins Tile to Start Menu.
+        private async Task<bool> pinTile()
+        {
+            //Create the secondary tile
+            string tileActivationArguments = feedId.ToString(); //We put the feed's ID as the activation argument => clicking on a sec.tile will open the app with that ID as argument
+            string displayName = "RSS Live Tile for "+feedTitle;
+
+            // Prepare package images for our tile to be pinned 
+            Uri square150x150Logo = new Uri("ms-appx:///Assets/Square150x150Logo.scale-200.png");
+            Uri wide310x150Logo = new Uri("ms-appx:///Assets/Wide310x150Logo.scale-200.png");
+            Uri square310x310Logo = new Uri("ms-appx:///Assets/Square310x310Logo.scale-200.png");
+            Uri square44x44Logo = new Uri("ms-appx:///Assets/Square44x44Logo.scale-200.png");
+            
+            TileSize newTileDesiredSize = TileSize.Square150x150;
+
+            //The Secondary Tile unique ID is the Feed ID, makes checking easy.
+            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString(),
+                                                            displayName,
+                                                            tileActivationArguments,
+                                                            square150x150Logo,
+                                                            newTileDesiredSize);
+
+            //Setting visual elements
+            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = false;
+            secondaryTile.VisualElements.ShowNameOnWide310x150Logo = true;
+            secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = true;
+
+            secondaryTile.VisualElements.Wide310x150Logo = wide310x150Logo;
+            secondaryTile.VisualElements.Square310x310Logo = square310x310Logo;
+            secondaryTile.VisualElements.Square44x44Logo = square44x44Logo;
+            
+            secondaryTile.VisualElements.ForegroundText = ForegroundText.Light;
+            
+            await secondaryTile.RequestCreateForSelectionAsync(new Windows.Foundation.Rect());
+
+
+            //Save the unique tile ID and immediately try updating it with the XML we have
+            await updateTile();
+
+            return true;
+        }
+
+        //Unpins Tile from Start Menu.
+        public async void unpinTile()
+        {
+            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString());
+
+            if (isTilePinned())
+                await secondaryTile.RequestDeleteForSelectionAsync(new Windows.Foundation.Rect());
+
+        }
+
+        public IAsyncOperation<bool> updateTileAsync()
+        {
+            Task<bool> load = updateTile();
+            IAsyncOperation<bool> to = load.AsAsyncOperation();
+            return to;
+        }
 
         //Updates this feed's live tile, if it exists.
-        public async void updateTile()
+        private async Task<bool> updateTile()
         {
             SyndicationFeed feedData = await getFeedData();
-            XmlDocument tileXml = buildTileXML(feedData);
+            XmlDocument tileXml = await buildTileXML(feedData);
             TileNotification tileNotification = new TileNotification(tileXml);
 
             TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
             secondaryTileUpdater.Update(tileNotification);
+
+            return true;
+        }
+
+        public IAsyncOperation<string> getFeedTitleAsync()
+        {
+            Task<string> load = getFeedTitle();
+            IAsyncOperation<string> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Get the RSS Feed's title, or the URL if it doesn't have one.
+        private async Task<String> getFeedTitle()
+        {
+
+            SyndicationFeed feed = await getFeedData();
+            if (feed != null)
+            {
+                String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
+                isValid = true;
+                return feedTitleText;
+            }
+
+            isValid = false;
+            return "Invalid RSS Feed";
+        }
+
+        public IAsyncOperation<SyndicationFeed> getFeedDataAsync()
+        {
+            Task<SyndicationFeed> load = getFeedData();
+            IAsyncOperation<SyndicationFeed> to = load.AsAsyncOperation();
+            return to;
         }
 
         //Get RSS feed from URL, if it's incorrect return null
@@ -94,10 +195,65 @@ namespace BackgroundTasks.Data
             return feed;
         }
 
+        //Returns the main domain of the feed. Used for favicon retrieval.
+        public string getFeedDomain()
+        {
+            return new Uri(URL).Host;
+        }
 
+        public IAsyncOperation<string> getHiResFaviconAsync()
+        {
+            Task<string> load = getHiResFavicon();
+            IAsyncOperation<string> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Tries getting a higher res favicon through the use of icons.better-idea.org. Falls back to Google S2 if there are no hi-res images.
+        private async Task<string> getHiResFavicon()
+        {
+            var client = new HttpClient();
+
+            //Before anything, we see if this Feed has an atom:icon. If it does, we return that, as it's made especially for the feed.
+            //Commented out - It works, but most atom:icons are rectangular, which isn't a format suited for live tiles.
+            /*SyndicationFeed f = await getFeedData();
+
+            if (f.ImageUri != null)
+                return f.ImageUri.ToString();
+                */
+
+            //If it doesn't, we look at the favicons for its domain.
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(new Uri("https://icons.better-idea.org/allicons.json?url=" + getFeedDomain() + "&formats=png"));
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                JsonArray icons = JsonValue.Parse(jsonString).GetObject().GetNamedArray("icons");
+                
+                double largestWidth = 0;
+                string urlLargestIcon = "http://www.google.com/s2/favicons?domain_url=" + getFeedDomain(); //Fallback in case there are no png icons available
+
+                //Iterate on the icons array to get the image with the highest resolution
+                foreach (JsonValue icon in icons)
+                {
+                    JsonObject obj = icon.GetObject();
+                    if (obj.GetNamedNumber("width") > largestWidth)
+                    {
+                        largestWidth = obj.GetNamedNumber("width");
+                        urlLargestIcon = obj.GetNamedString("url");
+                    }
+                }
+
+                return urlLargestIcon;
+            }
+            catch (Exception e)
+            {
+                return "http://www.google.com/s2/favicons?domain_url=" + getFeedDomain();
+            }
+
+        }
 
         //Build a tile XML from the template we have and the feed's items.
-        private XmlDocument buildTileXML(SyndicationFeed feed)
+        private async Task<XmlDocument> buildTileXML(SyndicationFeed feed)
         {
             String cmplteTile = null;
             ResourceLoader rl = new ResourceLoader();
@@ -119,7 +275,14 @@ namespace BackgroundTasks.Data
 
                 //Create tiles
                 XmlDocument tileXml = new Windows.Data.Xml.Dom.XmlDocument();
-                tileXml.LoadXml(customXml);
+
+                //grab Favicon and insert its url in the XML where the #favicon# tag is
+                String xmlBeforeDataInsertion = customXml;
+                String faviconURL = await getHiResFavicon();  
+                xmlBeforeDataInsertion = 
+                    xmlBeforeDataInsertion.Replace("#favicon#", faviconURL); //low effort strikes again
+
+                tileXml.LoadXml(xmlBeforeDataInsertion);
 
                 //Edit tile title
                 XmlElement feedTitle = (XmlElement)tileXml.GetElementsByTagName("visual")[0];
@@ -135,6 +298,8 @@ namespace BackgroundTasks.Data
                     var desc = item.Summary;
 
                     string titleText = title == null ? String.Empty : title.Text;
+                    titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
+
                     if (titleText.Length > 200)
                         titleText = titleText.Substring(0, 200);
 
@@ -160,7 +325,7 @@ namespace BackgroundTasks.Data
                 cmplteTile = tileXml.GetXml();
 
             }
-           
+
             //The tags used to insert the RSS elements in the XML need to be removed for the tile to properly appear in the Start Menu.
             //HERE COMES THE QUALITY
             foreach (string tag in textElementName)

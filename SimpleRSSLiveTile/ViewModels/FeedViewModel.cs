@@ -1,4 +1,4 @@
-﻿using SimpleRSSLiveTile.Data;
+﻿using RSSDataTypes.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +17,7 @@ namespace SimpleRSSLiveTile.ViewModels
         public string URL { get; set; }
         public string TileXML { get; set; }
         public string FaviconURL { get; set; }
+        public string FaviconHiResImage { get; set; }
 
         public FeedViewModel()
         {
@@ -35,7 +36,7 @@ namespace SimpleRSSLiveTile.ViewModels
             viewModel.Title = item.getTitle();
             viewModel.URL = item.getURL();
             viewModel.TileXML = item.getTileXML();
-            viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.getURL(); //Low effort
+            viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.getFeedDomain(); //Low effort
 
             return viewModel;
 

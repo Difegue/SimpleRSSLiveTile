@@ -1,5 +1,5 @@
 ﻿using SimpleRSSLiveTile.ViewModels;
-using SimpleRSSLiveTile.Data;
+using RSSDataTypes.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +19,8 @@ using Windows.UI.Xaml.Navigation;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.ApplicationModel.Resources;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Popups;
 
 namespace SimpleRSSLiveTile
 {
@@ -59,7 +61,7 @@ namespace SimpleRSSLiveTile
             }
             
             Feed feedToSave = new Feed(Feed.Id, "New RSS Feed", feedInput.Text, tileXML);
-            String feedTitle= await feedToSave.getFeedTitle();
+            String feedTitle= await feedToSave.getFeedTitleAsync();
 
             feedToSave.setTitle(feedTitle);
 
@@ -100,11 +102,14 @@ namespace SimpleRSSLiveTile
           
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
 
+                feedTitle.Text = f.getTitle();
+
                 //Maybe we're saving a tile already pinned, in which case we'll just update it
                 if (feedDB.GetFeedById(f.getId()).isTilePinned()) 
                 {
                     greetingOutput.Text = "Feed Saved ! Live Tile will be automatically updated.";
                     unpinButton.Visibility = Visibility.Visible;
+                    await f.updateTileAsync();
                 }
                 else
                 {
@@ -134,8 +139,7 @@ namespace SimpleRSSLiveTile
             //If not, ask the user to save his feed.
             if (f.isTileValid())
             {
-                await f.pinTile();
-                //this.RegisterBackgroundTask();
+                await f.pinTileAsync();
 
                 //Save pinned feed state
                 feedDB.SetFeed(f);
@@ -243,7 +247,8 @@ namespace SimpleRSSLiveTile
             // Register for hardware and software back request from the system
             SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
             systemNavigationManager.BackRequested += DetailPage_BackRequested;
-            systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            if (!ShouldGoToWideState())
+                systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
         }
 
@@ -269,7 +274,7 @@ namespace SimpleRSSLiveTile
             // Evict this page from the cache as we may not need it again.
             NavigationCacheMode = NavigationCacheMode.Disabled;
 
-            if (Frame.BackStackDepth >0)
+            if (Frame != null && Frame.BackStackDepth > 0)
                 if (useTransition)
                 {
                     Frame.GoBack(new EntranceNavigationTransitionInfo());
@@ -278,6 +283,7 @@ namespace SimpleRSSLiveTile
                 {
                     Frame.GoBack(new SuppressNavigationTransitionInfo());
                 }
+
         }
 
         private bool ShouldGoToWideState()
@@ -285,7 +291,7 @@ namespace SimpleRSSLiveTile
             return Window.Current.Bounds.Width >= 720;
         }
 
-        private void PageRoot_Loaded(object sender, RoutedEventArgs e)
+        private async void PageRoot_Loaded(object sender, RoutedEventArgs e)
         {
             if (ShouldGoToWideState() && Frame.BackStackDepth > 0)
             {
@@ -299,6 +305,16 @@ namespace SimpleRSSLiveTile
             {
                 // Realize the main page content.
                 FindName("RootPanel");
+                RootPanel.Visibility = Visibility.Collapsed;
+
+                //Update the viewmodel based on the new data in the database, and refresh the UI elements
+                Feed = FeedViewModel.FromFeed(feedDB.GetFeedById(Feed.Id));
+
+                feedTitle.Text = Feed.Title;
+                feedInput.Text = Feed.URL;
+
+                String hiResFavicon = await feedDB.GetFeedById(Feed.Id).getHiResFaviconAsync();
+                feedHQFavicon.Source = new BitmapImage(new Uri(hiResFavicon, UriKind.Absolute));
 
                 ResourceLoader rl = new ResourceLoader();
                 if (Feed.TileXML != rl.GetString("AdaptiveTemplate"))
@@ -307,6 +323,15 @@ namespace SimpleRSSLiveTile
                     customTileXMLContent.Text = Feed.TileXML;
                     customTileXML.Visibility = Visibility.Visible;
                 }
+                else
+                {
+                    customTileToggle.IsOn = false;
+                    customTileXML.Visibility = Visibility.Collapsed;
+                }
+
+                pinButton.Visibility = Visibility.Collapsed;
+                unpinButton.Visibility = Visibility.Collapsed;
+                outputStackPanel.Visibility = Visibility.Collapsed;
 
                 //Check if feed is pinned and set visibility of buttons in consequence
                 if (feedDB.GetFeedById(Feed.Id).isTilePinned())
@@ -314,9 +339,47 @@ namespace SimpleRSSLiveTile
                 else if (feedDB.GetFeedById(Feed.Id).isTileValid())
                     pinButton.Visibility = Visibility.Visible;
 
+                if (!ShouldGoToWideState())
+                {
+                    deleteFeedCommandBar.Visibility = Visibility.Visible;
+                }
+
+                //We rebuilt the UI, now fade it in
+                RootPanel.Opacity = 0.0;
+                RootPanel.Visibility = Visibility.Visible;
+
+                AnimateDouble(RootPanel, "Opacity", 1.0, 200, () =>
+                {
+                    RootPanel.Visibility = Visibility.Visible;
+                });
+
+                Window.Current.SizeChanged += Window_SizeChanged;
+            }
+        }
+
+        public static void AnimateDouble(DependencyObject target, string path, double to, double duration, Action onCompleted = null)
+        {
+            var animation = new DoubleAnimation
+            {
+                EnableDependentAnimation = true,
+                To = to,
+                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+            };
+            Storyboard.SetTarget(animation, target);
+            Storyboard.SetTargetProperty(animation, path);
+
+            var sb = new Storyboard();
+            sb.Children.Add(animation);
+
+            if (onCompleted != null)
+            {
+                sb.Completed += (s, e) =>
+                {
+                    onCompleted();
+                };
             }
 
-            Window.Current.SizeChanged += Window_SizeChanged;
+            sb.Begin();
         }
 
         private void PageRoot_Unloaded(object sender, RoutedEventArgs e)
@@ -342,6 +405,29 @@ namespace SimpleRSSLiveTile
             e.Handled = true;
 
             OnBackRequested();
+        }
+
+        private async void DeleteFeed(object sender, RoutedEventArgs e)
+        {
+
+            var dialog = new MessageDialog("Do you really want to delete " + Feed.Title + "? \nThe matching Live Tile will be unpinned.", "Delete Feed?");
+
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes") { Id = 0 });
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("No") { Id = 1 });
+
+            dialog.DefaultCommandIndex = 0;
+            dialog.CancelCommandIndex = 1;
+
+            var result = await dialog.ShowAsync();
+
+            if ((int)result.Id == 0)
+            {
+                FeedDataSource feedSrc = new FeedDataSource();
+                feedSrc.GetFeedById(Feed.Id).unpinTile();
+                feedSrc.DeleteFeed(Feed.Id);
+
+                NavigateBackForWideState(useTransition: false);
+            }
         }
     }
 }

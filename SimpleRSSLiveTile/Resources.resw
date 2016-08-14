@@ -121,10 +121,14 @@
     <value>&lt;tile&gt;
   &lt;visual displayName="Tile Display Name"&gt;
 
+    &lt;binding template="TileSmall"&gt;
+      &lt;image src="#favicon#" placement="background"/&gt;
+    &lt;/binding&gt;
+
     &lt;binding template="TileMedium"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="body" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+          &lt;text hint-style="caption" hint-wrap="false"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
           &lt;text hint-style="captionsubtle"  hint-wrap="true" &gt;&lt;desc1&gt;&lt;/desc1&gt;&lt;/text&gt;
           
         &lt;/subgroup&gt;
@@ -136,7 +140,7 @@
     &lt;binding template="TileWide" branding="nameAndLogo"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="subtitle" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+          &lt;text hint-style="subtitle" hint-wrap="false"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
           &lt;text hint-style="captionsubtle" hint-wrap="true" &gt;&lt;desc1&gt;&lt;/desc1&gt;&lt;/text&gt;
         &lt;/subgroup&gt;
       &lt;/group&gt;
@@ -181,7 +185,7 @@
     &lt;binding template="TileMedium"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="body" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
           &lt;text hint-style="captionsubtle"  hint-wrap="true" &gt;Wrong URL ?&lt;/text&gt;
           
         &lt;/subgroup&gt;

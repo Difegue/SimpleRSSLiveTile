@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackgroundTasks.Data
+namespace RSSDataTypes.Data
 {
-    class FeedDataSource
+    public sealed class FeedDataSource
     {
         private Windows.Storage.ApplicationDataContainer feedDB; 
 
@@ -16,6 +16,14 @@ namespace BackgroundTasks.Data
         public FeedDataSource()
         {
             feedDB = Windows.Storage.ApplicationData.Current.LocalSettings;
+        }
+
+        public bool FeedExists(string feedId)
+        {
+            if (feedId != null && feedId != "")
+                return feedDB.Values.Keys.Contains(feedId);
+
+            return false;
         }
 
         public IList<Feed> GetAllFeeds()
@@ -34,6 +42,7 @@ namespace BackgroundTasks.Data
                 }
                 catch (Exception e)
                 {
+                    //If we couldn't deserialize a Feed from this ID, it's not a Feed. 
                     //If the feedID is invalid (ergo not an int), remove the matching value from the storage
                     feedDB.Values.Remove(feedID);
                 }

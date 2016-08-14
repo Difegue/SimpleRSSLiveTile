@@ -20,17 +20,21 @@
         <Flyout x:Key="FormattingHelpFlyout" Placement="Top" >
             <StackPanel Margin="0" MinHeight="5">
 
-                <TextBlock>Write the XML for your Tile in the box up there. 
+                <TextBlock>Write the XML for your Tile in the box down there. 
                            <LineBreak/> <LineBreak/> 
                             Use special tags &lt;title#&gt;&lt;/title#&gt; and &lt;desc#&gt;&lt;/desc#&gt; 
                             <LineBreak/> 
                             to indicate the position of a RSS feed's items. 
                             <LineBreak/> 
-                            (# = order of your item in the feed, up to 3)
+                            (# = order of your item in the feed, up to 3) 
+                            <LineBreak/> <LineBreak/>  
+                            You can also show the feed's favicon image 
+                            <LineBreak/>
+                            with the #favicon# tag.
                             <LineBreak/> <LineBreak/>
                             When you're done, hit Save ! 
                             <LineBreak/>
-                            Your Live Tile will update automatically.</TextBlock>
+                            You'll be able to pin your Live Tile if the XML is valid.</TextBlock>
 
                 <HyperlinkButton NavigateUri="https://msdn.microsoft.com/en-us/library/windows/apps/mt590880.aspx">Official Adaptive Tile Documentation</HyperlinkButton>
             </StackPanel>
@@ -43,52 +47,65 @@
         </Flyout>
     </Page.Resources>
 
-    <!-- Don't realize our content by default. See PageRoot_Loaded. -->
-    <StackPanel x:Name="RootPanel" Margin="28,31,-20,-21" x:DeferLoadStrategy="Lazy">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <SymbolIcon Symbol="PostUpdate" Height="30" RenderTransformOrigin="0.5,0.5" Margin="10,-34,0,0">
-                <SymbolIcon.RenderTransform>
-                    <CompositeTransform ScaleY="2" ScaleX="2"/>
-                </SymbolIcon.RenderTransform>
-            </SymbolIcon>
-            <TextBlock
-            Margin="20,0,0,40" 
-            FontSize="30"
-            Style="{ThemeResource TitleTextBlockStyle}"
-            HorizontalAlignment="Left"
-            Text="{x:Bind Feed.Title, Mode=OneWay}" />
-        </StackPanel>
+        <!-- Don't realize our content by default. See PageRoot_Loaded. -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="RootPanel" Margin="28,31,20,21" x:DeferLoadStrategy="Lazy" Visibility="Collapsed">
 
-        <TextBlock Text="URL to your RSS feed :"/>
-        <StackPanel x:Name="inputPanel" Orientation="Horizontal" Margin="0,15,0,20">
-            <TextBox x:Name="feedInput" Width="280" HorizontalAlignment="Left" Text="{x:Bind Feed.URL, Mode=OneWay}"/>
-         
-        </StackPanel>
-        
-        <ToggleSwitch x:Name="customTileToggle" Header="Use Custom Tile XML" OffContent="No" OnContent="Yes" Toggled="ToggleSwitch_Toggled"/>
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="feedHQFavicon" Height="50" Margin="0,-30,0,0" Source="ms-appx:///Assets/Untitled.scale-200.png"/>
+                    <TextBlock
+                Margin="20,0,0,40" 
+                FontSize="30"
+                Style="{ThemeResource TitleTextBlockStyle}"
+                HorizontalAlignment="Left" 
+                x:Name="feedTitle"
+                Text="{x:Bind Feed.Title, Mode=OneWay}" />
+                </StackPanel>
 
-        <StackPanel x:Name="customTileXML" Visibility="Collapsed">
-            <TextBlock Text="Adaptive Tile XML :  " Margin="0,20,0,15"/>
-            <TextBox x:Name="customTileXMLContent" Text="" TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" Height="200" HorizontalAlignment="Left" Margin="0,0,10,0" />
-            <Grid>
-                <HyperlinkButton FlyoutBase.AttachedFlyout="{StaticResource FormattingHelpFlyout}" Tapped="Show_FormattingHelp"  Content="Formatting Help" Margin="0,10,0,0" />
-            </Grid>
-            <TextBlock x:Name="customXMLOutput" Margin="0,5,0,0"/>
-        </StackPanel>
+                <TextBlock Text="URL to your RSS feed :"/>
+                <StackPanel x:Name="inputPanel" Orientation="Horizontal" Margin="0,15,0,20">
+                    <TextBox x:Name="feedInput" Width="280" HorizontalAlignment="Left" Text="{x:Bind Feed.URL, Mode=OneWay}"/>
 
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="inputButton" Content="Save Feed" Click="SaveFeed"/>
-            <Button x:Name="pinButton" Margin="10,0,0,0" Content="Pin to Start" Click="PinFeed" Visibility="Collapsed"/>
-            <Button x:Name="unpinButton" Margin="10,0,0,0" Content="Unpin from Start"  Click="UnpinFeed" Visibility="Collapsed"/>
-        </StackPanel>
-        
-        <ProgressBar x:Name="Progress" Width="130" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="0,0,10,10" HorizontalAlignment="Left" Visibility="Collapsed" />
-        <StackPanel Orientation="Horizontal" Visibility="Collapsed" x:Name="outputStackPanel">
-            <SymbolIcon x:Name="symbolOutput" Symbol="Accept" />
-            <TextBlock x:Name="greetingOutput" Margin="10,16,0,22" Text="asasas" FontSize="18"/>
-        </StackPanel>
-    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="inputButton" Content="Save Feed" Click="SaveFeed"/>
+                    <Button x:Name="pinButton" Margin="10,0,0,0" Content="Pin to Start" Click="PinFeed" Visibility="Collapsed"/>
+                    <Button x:Name="unpinButton" Margin="10,0,0,0" Content="Unpin from Start"  Click="UnpinFeed" Visibility="Collapsed"/>
+                </StackPanel>
+
+                <ProgressBar x:Name="Progress" Width="130" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="0,0,10,10" HorizontalAlignment="Left" Visibility="Collapsed" />
+                <StackPanel Orientation="Horizontal" Visibility="Collapsed" x:Name="outputStackPanel">
+                    <SymbolIcon x:Name="symbolOutput" Symbol="Accept" />
+                    <TextBlock x:Name="greetingOutput" Margin="10,16,0,22" Text="asasas" FontSize="18"/>
+                </StackPanel>
+
+                <ToggleSwitch x:Name="customTileToggle" Margin="0,10,0,0" Header="Use Custom Style for this Tile" OffContent="No" OnContent="Yes" Toggled="ToggleSwitch_Toggled"/>
+
+
+                <StackPanel x:Name="customTileXML" Visibility="Visible">
+                    <HyperlinkButton FlyoutBase.AttachedFlyout="{StaticResource FormattingHelpFlyout}" Tapped="Show_FormattingHelp"  Content="Formatting Help" Margin="0,0,0,0" />
+                    <TextBox x:Name="customTileXMLContent" Text="" TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" HorizontalAlignment="Left" Margin="0,0,10,0" />
+
+                    <TextBlock x:Name="customXMLOutput" Margin="0,5,0,0"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+
+        <CommandBar Grid.Row="1" x:Name="deleteFeedCommandBar" Margin="0,0,0,0" Visibility="Collapsed" VerticalAlignment="Bottom">
+
+            <AppBarButton Icon="Delete" Label="Delete Feed" Click="DeleteFeed"/>
+
+        </CommandBar>
+    </Grid>
 
 </Page>
 

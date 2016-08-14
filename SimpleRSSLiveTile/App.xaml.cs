@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RSSDataTypes.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Web.Syndication;
 
 namespace SimpleRSSLiveTile
 {
@@ -41,6 +43,7 @@ namespace SimpleRSSLiveTile
         {
             //When launched through a notification, we do absolutely fucking nothing different
             LaunchActivatedEventArgs e = args as LaunchActivatedEventArgs;
+
             OnLaunched(e);
         }
 
@@ -49,17 +52,45 @@ namespace SimpleRSSLiveTile
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
-
+            string launchArgument = e.Arguments;
             Frame rootFrame = Window.Current.Content as Frame;
+            FeedDataSource feedSrc = new FeedDataSource();
+
+            Windows.Storage.StorageFolder storageFolder =
+                     Windows.Storage.ApplicationData.Current.LocalFolder;
+            Windows.Storage.StorageFile sampleFile =
+                await storageFolder.CreateFileAsync("nicelog.txt", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, "launch argument: " + launchArgument);
+
+            // Parameter is Feed ID
+            // If the ID exists, launch the RSS feed's first URL in a web browser and exit the app if it's not opened.
+            if (feedSrc.FeedExists(launchArgument))
+            {
+
+                int id = int.Parse(launchArgument);
+                //Let's try different possible URLs. Default is the RSS feed's own URL.
+                Uri navigationUri = new Uri("http://www.feedbucket.com/?src="+feedSrc.GetFeedById(id).getURL());
+
+                SyndicationFeed f = await feedSrc.GetFeedById(id).getFeedDataAsync();
+                if (f.BaseUri != null)
+                    navigationUri = f.BaseUri;
+
+                if (f.Items[0].ItemUri != null)
+                    navigationUri = f.Items[0].ItemUri;
+
+                if (f.Items[0].BaseUri != null)
+                    navigationUri = f.Items[0].BaseUri;
+
+                await Windows.System.Launcher.LaunchUriAsync(navigationUri);
+
+                if (rootFrame == null)
+                    Application.Current.Exit();
+                //launchArgument = ""; //Nullify the argument since it makes the app crash otherwise. -- hella bad design on that one
+            }
+
+
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -70,11 +101,6 @@ namespace SimpleRSSLiveTile
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
@@ -84,7 +110,7 @@ namespace SimpleRSSLiveTile
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(NewMainPage), e.Arguments);
+                rootFrame.Navigate(typeof(NewMainPage), launchArgument);
             }
             // Ensure the current window is active
             Window.Current.Activate();

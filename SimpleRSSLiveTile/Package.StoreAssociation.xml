@@ -358,11 +358,14 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>13459Difegue.SimpleRSSLiveTile</MainPackageIdentityName>
+    <MainPackageIdentityName>13459Difegue.RSSLiveTiles</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Simple RSS Live Tile</ReservedName>
+      <ReservedName>RSS Live Tiles</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames />
-  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9NBLGGH6GSHP" />
+  <AccountPackageIdentityNames>
+    <MainPackageIdentityName>13459Difegue.SimpleRSSLiveTile</MainPackageIdentityName>
+    <MainPackageIdentityName>13459Difegue.AREL-colevirtuelledelEISTI</MainPackageIdentityName>
+  </AccountPackageIdentityNames>
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NBLGGH50ZLR" />
 </StoreAssociation>

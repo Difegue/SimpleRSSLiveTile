@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="13459Difegue.SimpleRSSLiveTile" Publisher="CN=B2F6FFCA-07C7-479C-AC33-2C75463C7DCE" Version="1.2.9.0" />
+  <Identity Name="13459Difegue.RSSLiveTiles" Publisher="CN=B2F6FFCA-07C7-479C-AC33-2C75463C7DCE" Version="1.1.1.0" />
   <mp:PhoneIdentity PhoneProductId="e8f5c3d8-349f-40d1-ac62-1baa8e962820" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Simple RSS Live Tile</DisplayName>
+    <DisplayName>RSS Live Tiles</DisplayName>
     <PublisherDisplayName>Difegue</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,8 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SimpleRSSLiveTile.App">
-      <uap:VisualElements DisplayName="RSS Live Tiles" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="SimpleRSSLiveTile" BackgroundColor="purple">
-        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\Untitled.png" />
+      <uap:VisualElements DisplayName="RSS Live Tiles" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="SimpleRSSLiveTile" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="RSS Live Tiles" Square310x310Logo="Assets\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square310x310Logo" />
@@ -29,6 +28,7 @@
           <BackgroundTasks>
             <Task Type="timer" />
             <Task Type="pushNotification" />
+            <Task Type="bluetooth" />
           </BackgroundTasks>
         </Extension>
       </Extensions>

@@ -1,4 +1,4 @@
-﻿using SimpleRSSLiveTile.Data;
+﻿using RSSDataTypes.Data;
 using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Store;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -35,7 +36,7 @@ namespace SimpleRSSLiveTile
 
         }
 
-        //IAP initialization, unused.
+        //Trial/Non Trial differentiation. (Pretty trivial but fun stuff)
         private async void initializeIAP()
         {
             // Get the license info
@@ -51,7 +52,11 @@ namespace SimpleRSSLiveTile
             if (doshMoneyDollar.ProductLicenses["donationFromTomodachi"].IsActive)
             {
                 donateButton.Label = "Arigato !";
-                donateButton.Icon = new SymbolIcon(Symbol.SolidStar);
+                
+                FontIcon fIcon = new FontIcon();
+                fIcon.Glyph = "🤑";
+                donateButton.Icon = fIcon;
+
             }
 
         }
@@ -59,6 +64,7 @@ namespace SimpleRSSLiveTile
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            this.RegisterBackgroundTask();
 
             FeedList = new ObservableCollection<FeedViewModel>();
 
@@ -107,9 +113,11 @@ namespace SimpleRSSLiveTile
             }
             else
             {
+                deleteFeedButton.Visibility = Visibility.Visible;
                 // Play a refresh animation when the user switches detail Feeds.
                 //EnableContentTransitions();
                 contentFrame.Children.Clear();
+                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
                 Frame f = new Frame();
                 f.Navigate(typeof(FeedDetailPage), clickedFeed.Id);
                 contentFrame.Children.Add(f);
@@ -122,7 +130,7 @@ namespace SimpleRSSLiveTile
             //Get Feed we want to delete
             if (_lastSelectedFeed != null)
             {
-                var dialog = new MessageDialog("Do you really want to delete "+_lastSelectedFeed.Title+"?", "Delete Feed?");
+                var dialog = new MessageDialog("Do you really want to delete "+_lastSelectedFeed.Title+"? \nThe matching Live Tile will be unpinned.", "Delete Feed?");
 
                 dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes") { Id = 0 });
                 dialog.Commands.Add(new Windows.UI.Popups.UICommand("No") { Id = 1 });
@@ -134,10 +142,12 @@ namespace SimpleRSSLiveTile
 
                 if ((int)result.Id == 0)
                 {
+                    deleteFeedButton.Visibility = Visibility.Collapsed;
                     FeedDataSource feedSrc = new FeedDataSource();
-                    _lastSelectedFeed = null;
-                    feedSrc.DeleteFeed(_lastSelectedFeed.Id);
+                    feedSrc.GetFeedById(_lastSelectedFeed.Id).unpinTile();
+                    feedSrc.DeleteFeed(_lastSelectedFeed.Id);          
                     UpdateFeedList();
+                    _lastSelectedFeed = null;
                     contentFrame.Children.Clear();
                 }
             }
@@ -146,12 +156,15 @@ namespace SimpleRSSLiveTile
         private async void OpenDonate(object sender, RoutedEventArgs e)
         {
             await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sugoi%40cock%2eli&lc=FR&item_name=Sugoi%20Apps%20for%20Tomodachis%20United&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"));
+            //string aboutDialog = "If you find this thing useful, consider buying the app ! Or at ";
+            //MessageDialog msgbox = new MessageDialog(aboutDialog, "Here comes the money");
+            //await msgbox.ShowAsync();
         }
 
         private async void AboutSplash(object sender, RoutedEventArgs e)
         {
-            string aboutDialog = "I pretty much only made this because my bank is awful\nPlease give me money I have anime figures to buy\nSource code avaiable @ https://github.com/Difegue/SimpleRSSLiveTile";
-            MessageDialog msgbox = new MessageDialog(aboutDialog, "About Simple RSS Live Tile");
+            string aboutDialog = "Previously Simple RSS Live Tile. \nI still use this for my bank. \nSource code available 👉 https://github.com/Difegue/SimpleRSSLiveTile";
+            MessageDialog msgbox = new MessageDialog(aboutDialog, "About RSS Live Tiles 👌🐔");
             await msgbox.ShowAsync();
         }
 
@@ -175,6 +188,31 @@ namespace SimpleRSSLiveTile
 
         }
 
+        private async void RegisterBackgroundTask()
+        {
+            var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+            if (backgroundAccessStatus == BackgroundAccessStatus.AlwaysAllowed ||
+                backgroundAccessStatus == BackgroundAccessStatus.AllowedSubjectToSystemPolicy)
+            {
+                foreach (var task in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (task.Value.Name == taskName)
+                    {
+                        task.Value.Unregister(true);
+                    }
+                }
+
+                BackgroundTaskBuilder taskBuilder = new BackgroundTaskBuilder();
+                taskBuilder.Name = taskName;
+                taskBuilder.TaskEntryPoint = taskEntryPoint;
+                taskBuilder.SetTrigger(new TimeTrigger(15, false));
+                var registration = taskBuilder.Register();
+            }
+        }
+
+        private const string taskName = "RSSFeedBackgroundTask";
+        private const string taskEntryPoint = "BackgroundTasks.RSSFeedBackgroundTask";
+
         private void AdaptiveStates_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
         {
             UpdateForVisualState(e.NewState, e.OldState);
@@ -187,6 +225,7 @@ namespace SimpleRSSLiveTile
             if (isNarrow && oldState == DefaultState && _lastSelectedFeed != null)
             {
                 // Resize down to the detail Feed. Don't play a transition.
+                contentFrame.Children.Clear();
                 Frame.Navigate(typeof(FeedDetailPage), _lastSelectedFeed.Id, new SuppressNavigationTransitionInfo());
             }
 
