@@ -121,6 +121,7 @@
     <None Include="SimpleRSSLiveTile_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\loadan.gif" />
     <Content Include="Assets\Square310x310Logo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />

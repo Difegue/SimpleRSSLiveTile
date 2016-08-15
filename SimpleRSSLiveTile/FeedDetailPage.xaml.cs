@@ -61,6 +61,8 @@ namespace SimpleRSSLiveTile
             }
             
             Feed feedToSave = new Feed(Feed.Id, "New RSS Feed", feedInput.Text, tileXML);
+
+            feedToSave.setAtomIconUse(atomIconToggle.IsOn);
             String feedTitle= await feedToSave.getFeedTitleAsync();
 
             feedToSave.setTitle(feedTitle);
@@ -95,14 +97,16 @@ namespace SimpleRSSLiveTile
             {
                 //We're good, save the feed and enable pinning.
                 feedDB.SetFeed(f);
-
-                outputStackPanel.Visibility = Visibility.Visible;
+        
                 symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
                 symbolOutput.Symbol = Symbol.Accept;
           
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
 
+                //Update feed Title and favicon
                 feedTitle.Text = f.getTitle();
+                String faviconURL = await f.getHiResFaviconAsync();
+                feedHQFavicon.Source = new BitmapImage(new Uri(faviconURL, UriKind.Absolute));
 
                 //Maybe we're saving a tile already pinned, in which case we'll just update it
                 if (feedDB.GetFeedById(f.getId()).isTilePinned()) 
@@ -118,6 +122,7 @@ namespace SimpleRSSLiveTile
                 }
        
                 Progress.Visibility = Visibility.Collapsed;
+                outputStackPanel.Visibility = Visibility.Visible;
             }
             else
             {
@@ -316,6 +321,7 @@ namespace SimpleRSSLiveTile
                 String hiResFavicon = await feedDB.GetFeedById(Feed.Id).getHiResFaviconAsync();
                 feedHQFavicon.Source = new BitmapImage(new Uri(hiResFavicon, UriKind.Absolute));
 
+                atomIconToggle.IsOn = Feed.usingAtomIcon;
                 ResourceLoader rl = new ResourceLoader();
                 if (Feed.TileXML != rl.GetString("AdaptiveTemplate"))
                 {
@@ -344,6 +350,7 @@ namespace SimpleRSSLiveTile
                     deleteFeedCommandBar.Visibility = Visibility.Visible;
                 }
 
+                FeedWaiting.Visibility = Visibility.Collapsed;
                 //We rebuilt the UI, now fade it in
                 RootPanel.Opacity = 0.0;
                 RootPanel.Visibility = Visibility.Visible;
@@ -429,5 +436,24 @@ namespace SimpleRSSLiveTile
                 NavigateBackForWideState(useTransition: false);
             }
         }
+
+        private async void AtomIcon_Toggled(object sender, RoutedEventArgs e)
+        {
+            //Clear the existing image first to show we mean business
+            feedHQFavicon.Source = new BitmapImage(new Uri("ms-appx:///Assets/loadan.gif"));
+
+            //Show the new icon on the page, but don't save anything.
+            Feed f = await BuildFeedFromPage();
+
+            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
+            if (toggleSwitch != null)
+            {
+                f.setAtomIconUse(toggleSwitch.IsOn);
+                String newIconURL = await f.getHiResFaviconAsync();
+                feedHQFavicon.Source = new BitmapImage(new Uri(newIconURL, UriKind.Absolute));
+            }
+
+        }
+
     }
 }

@@ -33,7 +33,7 @@ namespace RSSDataTypes.Data
         [JsonProperty] private string URL;
         [JsonProperty] private string customXml;
         [JsonProperty] private bool isValid;
-
+        [JsonProperty] private bool useAtomIcon;
 
         public Feed()
         {
@@ -48,6 +48,7 @@ namespace RSSDataTypes.Data
             URL = u;
             customXml = rl.GetString("AdaptiveTemplate");
             isValid = false;
+            useAtomIcon = false;
         }
 
         public Feed(int i, string t, string u, string x)
@@ -57,6 +58,7 @@ namespace RSSDataTypes.Data
             URL = u;
             customXml = x;
             isValid = false;
+            useAtomIcon = false;
         }
 
         public IAsyncOperation<bool> pinTileAsync()
@@ -214,12 +216,10 @@ namespace RSSDataTypes.Data
             var client = new HttpClient();
 
             //Before anything, we see if this Feed has an atom:icon. If it does, we return that, as it's made especially for the feed.
-            //Commented out - It works, but most atom:icons are rectangular, which isn't a format suited for live tiles.
-            /*SyndicationFeed f = await getFeedData();
+            SyndicationFeed f = await getFeedData(); //Might return null for invalid feeds - we check for that down below
 
-            if (f.ImageUri != null)
+            if (f != null && f.ImageUri != null && useAtomIcon)
                 return f.ImageUri.ToString();
-                */
 
             //If it doesn't, we look at the favicons for its domain.
             try
@@ -270,7 +270,7 @@ namespace RSSDataTypes.Data
                 updater.EnableNotificationQueue(true);
                 updater.Clear();
 
-                // Keep track of the number feed items that get tile notifications. 
+                // Keep track of the number of feed items that get tile notifications. 
                 int itemCount = 0;
 
                 //Create tiles
@@ -316,9 +316,9 @@ namespace RSSDataTypes.Data
                     foreach (IXmlNode node in nodeListDesc)
                         node.InnerText = titleDesc;
 
-                    // Don't get more than 3 items.
+                    // Don't get more than 4 items.
                     itemCount++;
-                    if (itemCount > 2)
+                    if (itemCount > 3)
                         break;
                 }
 
@@ -401,6 +401,16 @@ namespace RSSDataTypes.Data
         public Boolean isTileValid()
         {
             return isValid;
+        }
+
+        public void setAtomIconUse(bool b)
+        {
+            useAtomIcon = b;
+        }
+
+        public bool isUsingAtomIcon()
+        {
+            return useAtomIcon;
         }
 
     }

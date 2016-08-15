@@ -24,9 +24,9 @@
                            <LineBreak/> <LineBreak/> 
                             Use special tags &lt;title#&gt;&lt;/title#&gt; and &lt;desc#&gt;&lt;/desc#&gt; 
                             <LineBreak/> 
-                            to indicate the position of a RSS feed's items. 
+                            to indicate the position of your RSS feed's titles and content. 
                             <LineBreak/> 
-                            (# = order of your item in the feed, up to 3) 
+                            (# = order of your item in the feed, up to 4) 
                             <LineBreak/> <LineBreak/>  
                             You can also show the feed's favicon image 
                             <LineBreak/>
@@ -45,6 +45,31 @@
                 </Style>
             </Flyout.FlyoutPresenterStyle>
         </Flyout>
+
+        <Flyout x:Key="AtomIconFlyout" Placement="Top" >
+            <StackPanel Margin="0" MinHeight="5">
+                <TextBlock>Some RSS feeds can contain an atom:icon, 
+                           <LineBreak/> 
+                            which might be of higher quality than the favicons we can find.
+                            <LineBreak/> <LineBreak/> 
+                            If you toggle this, we'll use the atom:icon as the favicon 
+                            <LineBreak/> 
+                            for your feed, if it exists.
+                            <LineBreak/>  
+                            If it doesn't, we'll keep using the regular favicon. 
+                            <LineBreak/><LineBreak/> 
+                            The image updates immediately on toggle, so give it a try !
+                            <LineBreak/>
+                            If you like the result, don't forget to save.
+                </TextBlock>
+            </StackPanel>
+
+            <Flyout.FlyoutPresenterStyle>
+                <Style TargetType="FlyoutPresenter">
+                    <Setter Property="Margin" Value="50,0,0,0"/>
+                </Style>
+            </Flyout.FlyoutPresenterStyle>
+        </Flyout>
     </Page.Resources>
 
     <Grid>
@@ -53,8 +78,18 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Don't realize our content by default. See PageRoot_Loaded. -->
+        <Grid x:Name="FeedWaiting" Grid.Row="0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <ProgressRing VerticalAlignment="Center" Grid.Row="0" IsActive="True" Foreground="{ThemeResource SystemAccentColor}" Height="100" Width="100" />
+            <TextBlock VerticalAlignment="Center" Grid.Row="0" HorizontalAlignment="Center" FontSize="25" Margin="0,150,0,0">Loading your feed<LineBreak/>Please wait warmly.</TextBlock>
+        </Grid>
+        
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <!-- Don't realize our content by default. See PageRoot_Loaded. -->
             <StackPanel x:Name="RootPanel" Margin="28,31,20,21" x:DeferLoadStrategy="Lazy" Visibility="Collapsed">
 
                 <StackPanel Orientation="Horizontal">
@@ -64,6 +99,7 @@
                 FontSize="30"
                 Style="{ThemeResource TitleTextBlockStyle}"
                 HorizontalAlignment="Left" 
+                TextWrapping="Wrap"
                 x:Name="feedTitle"
                 Text="{x:Bind Feed.Title, Mode=OneWay}" />
                 </StackPanel>
@@ -83,9 +119,15 @@
                 <ProgressBar x:Name="Progress" Width="130" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="0,0,10,10" HorizontalAlignment="Left" Visibility="Collapsed" />
                 <StackPanel Orientation="Horizontal" Visibility="Collapsed" x:Name="outputStackPanel">
                     <SymbolIcon x:Name="symbolOutput" Symbol="Accept" />
-                    <TextBlock x:Name="greetingOutput" Margin="10,16,0,22" Text="asasas" FontSize="18"/>
+                    <TextBlock x:Name="greetingOutput" Margin="10,16,0,22" Text="" FontSize="18"/>
                 </StackPanel>
 
+                <StackPanel Orientation="Horizontal">
+                    <ToggleSwitch x:Name="atomIconToggle" Margin="0,10,0,0" Header="Use atom:icon" OffContent="No" OnContent="Yes" Toggled="AtomIcon_Toggled"/>
+                    <HyperlinkButton FlyoutBase.AttachedFlyout="{StaticResource AtomIconFlyout}" Tapped="Show_FormattingHelp"  Content="What's this ?" Margin="0,0,0,0" />
+
+                </StackPanel>
+                    
                 <ToggleSwitch x:Name="customTileToggle" Margin="0,10,0,0" Header="Use Custom Style for this Tile" OffContent="No" OnContent="Yes" Toggled="ToggleSwitch_Toggled"/>
 
 
@@ -98,7 +140,7 @@
 
             </StackPanel>
         </ScrollViewer>
-
+        
 
         <CommandBar Grid.Row="1" x:Name="deleteFeedCommandBar" Margin="0,0,0,0" Visibility="Collapsed" VerticalAlignment="Bottom">
 
@@ -108,4 +150,3 @@
     </Grid>
 
 </Page>
-

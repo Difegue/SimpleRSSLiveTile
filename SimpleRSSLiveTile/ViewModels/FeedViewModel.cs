@@ -18,6 +18,7 @@ namespace SimpleRSSLiveTile.ViewModels
         public string TileXML { get; set; }
         public string FaviconURL { get; set; }
         public string FaviconHiResImage { get; set; }
+        public bool usingAtomIcon { get; set; }
 
         public FeedViewModel()
         {
@@ -37,6 +38,7 @@ namespace SimpleRSSLiveTile.ViewModels
             viewModel.URL = item.getURL();
             viewModel.TileXML = item.getTileXML();
             viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.getFeedDomain(); //Low effort
+            viewModel.usingAtomIcon = item.isUsingAtomIcon();
 
             return viewModel;
 
