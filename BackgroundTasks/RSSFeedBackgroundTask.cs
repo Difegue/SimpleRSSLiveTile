@@ -28,6 +28,9 @@ namespace BackgroundTasks
 
             await updatePinnedTiles();
 
+            //Re-register the task
+            BackgroundTaskHandler.RegisterBackgroundTask();
+
             // Inform the system that the task is finished.
             deferral.Complete();
         }

@@ -1,3 +1,3 @@
-MainPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\SimpleRSSLiveTile_1.1.1.0_ARM.appx
-SymbolPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\AppPackages\SimpleRSSLiveTile_1.1.1.0_Test\SimpleRSSLiveTile_1.1.1.0_ARM.appxsym
-ResourcePack=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\SimpleRSSLiveTile_1.1.1.0_scale-100.appx
+MainPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\SimpleRSSLiveTile_1.2.3.0_ARM.appx
+SymbolPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\AppPackages\SimpleRSSLiveTile_1.2.3.0_Test\SimpleRSSLiveTile_1.2.3.0_ARM.appxsym
+ResourcePack=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\SimpleRSSLiveTile_1.2.3.0_scale-100.appx

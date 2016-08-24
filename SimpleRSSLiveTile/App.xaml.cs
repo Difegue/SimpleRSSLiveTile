@@ -70,7 +70,7 @@ namespace SimpleRSSLiveTile
             {
 
                 int id = int.Parse(launchArgument);
-                //Let's try different possible URLs. Default is the RSS feed's own URL.
+                //Let's try different possible URLs. Default is the RSS feed's own URL, in a feed reader.
                 Uri navigationUri = new Uri("http://www.feedbucket.com/?src="+feedSrc.GetFeedById(id).getURL());
 
                 SyndicationFeed f = await feedSrc.GetFeedById(id).getFeedDataAsync();

@@ -1,4 +1,5 @@
-﻿using RSSDataTypes.Data;
+﻿using BackgroundTasks;
+using RSSDataTypes.Data;
 using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Store;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -37,6 +37,7 @@ namespace SimpleRSSLiveTile
         }
 
         //Trial/Non Trial differentiation. (Pretty trivial but fun stuff)
+        //Still not used 
         private async void initializeIAP()
         {
             // Get the license info
@@ -64,7 +65,9 @@ namespace SimpleRSSLiveTile
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            this.RegisterBackgroundTask();
+
+            //Register background task
+            BackgroundTaskHandler.RegisterBackgroundTask();
 
             FeedList = new ObservableCollection<FeedViewModel>();
 
@@ -187,31 +190,6 @@ namespace SimpleRSSLiveTile
             FeedList.Add(viewModel);
 
         }
-
-        private async void RegisterBackgroundTask()
-        {
-            var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-            if (backgroundAccessStatus == BackgroundAccessStatus.AlwaysAllowed ||
-                backgroundAccessStatus == BackgroundAccessStatus.AllowedSubjectToSystemPolicy)
-            {
-                foreach (var task in BackgroundTaskRegistration.AllTasks)
-                {
-                    if (task.Value.Name == taskName)
-                    {
-                        task.Value.Unregister(true);
-                    }
-                }
-
-                BackgroundTaskBuilder taskBuilder = new BackgroundTaskBuilder();
-                taskBuilder.Name = taskName;
-                taskBuilder.TaskEntryPoint = taskEntryPoint;
-                taskBuilder.SetTrigger(new TimeTrigger(15, false));
-                var registration = taskBuilder.Register();
-            }
-        }
-
-        private const string taskName = "RSSFeedBackgroundTask";
-        private const string taskEntryPoint = "BackgroundTasks.RSSFeedBackgroundTask";
 
         private void AdaptiveStates_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
         {
