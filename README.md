@@ -1,7 +1,7 @@
-# SimpleRSSLiveTile
+# RSS Live Tile
 Windows 10 Application for showing RSS feeds in Live Tiles.
 
-Source for https://github.com/Difegue/SimpleRSSLiveTile.git 
+Source for https://www.microsoft.com/en-us/store/p/rss-live-tiles/9nblggh50zlr
 
 --------------------------------------------
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
