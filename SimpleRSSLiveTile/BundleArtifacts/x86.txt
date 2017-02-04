@@ -1,2 +1,2 @@
-MainPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\x86\Release\SimpleRSSLiveTile_1.2.3.0_x86.appx
-SymbolPackage=C:\Users\Vincent\Documents\Visual Studio 2015\Projects\SimpleRSSLiveTile\SimpleRSSLiveTile\AppPackages\SimpleRSSLiveTile_1.2.3.0_Test\SimpleRSSLiveTile_1.2.3.0_x86.appxsym
+MainPackage=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\bin\x86\Release\SimpleRSSLiveTile_1.3.0.0_x86.appx
+SymbolPackage=C:\Users\Patchouli\Desktop\SimpleRSSLiveTile_1.3.0.0_Test\SimpleRSSLiveTile_1.3.0.0_x86.appxsym
