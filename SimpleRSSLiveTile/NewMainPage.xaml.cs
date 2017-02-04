@@ -218,5 +218,25 @@ namespace SimpleRSSLiveTile
             MasterListView.SelectedItem = _lastSelectedFeed;
         }
 
+        private async void SendFeedback(object sender, RoutedEventArgs e)
+        {
+            var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
+            emailMessage.Subject = "Feedback for RSS Live Tiles";
+
+            string feedList = "RSS Feeds used : \n";
+            FeedDataSource feedSrc = new FeedDataSource();
+            foreach (var Feed in feedSrc.GetAllFeeds())
+            {
+                feedList = feedList + Feed.getURL() + "\n";
+            }
+
+            emailMessage.Body = feedList;
+
+            var emailRecipient = new Windows.ApplicationModel.Email.EmailRecipient("sugoi@cock.li");
+            emailMessage.To.Add(emailRecipient);
+            
+
+            await Windows.ApplicationModel.Email.EmailManager.ShowComposeNewEmailAsync(emailMessage);
+        }
     }
 }

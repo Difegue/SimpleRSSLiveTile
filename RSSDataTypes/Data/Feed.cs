@@ -14,6 +14,7 @@ using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Syndication;
+using HtmlAgilityPack;
 
 namespace RSSDataTypes.Data
 {
@@ -298,14 +299,24 @@ namespace RSSDataTypes.Data
                     var desc = item.Summary;
 
                     string titleText = title == null ? String.Empty : title.Text;
+                    string titleDesc = desc == null ? String.Empty : desc.Text;
                     titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
 
-                    if (titleText.Length > 200)
-                        titleText = titleText.Substring(0, 200);
+                    //Strip all XML/HTML tags.
+                    titleText = System.Net.WebUtility.HtmlDecode(titleText);
+                    titleDesc = System.Net.WebUtility.HtmlDecode(titleDesc);
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(titleText);
+                    titleText = doc.DocumentNode.InnerText;
+                    doc.LoadHtml(titleDesc);
+                    titleDesc = doc.DocumentNode.InnerText;
 
-                    string titleDesc = desc == null ? String.Empty : desc.Text;
-                    if (titleDesc.Length > 200)
-                        titleDesc = titleDesc.Substring(0, 200);
+                    if (titleText.Length > 150) //A tile can't show more than 134 characters on a line (TileWide), so we limit each item to 150 chars. Also helps keeping the xml payload under 5kb.
+                        titleText = titleText.Substring(0, 150);
+
+                   
+                    if (titleDesc.Length > 150)
+                        titleDesc = titleDesc.Substring(0, 150);
 
                     XmlNodeList nodeListTitle = tileXml.GetElementsByTagName(textElementName[itemCount]);
                     XmlNodeList nodeListDesc = tileXml.GetElementsByTagName(descElementName[itemCount]);
@@ -342,7 +353,16 @@ namespace RSSDataTypes.Data
 
             //Reload the XML after corrections have been made
             XmlDocument finalXml = new Windows.Data.Xml.Dom.XmlDocument();
-            finalXml.LoadXml(cmplteTile);
+            try
+            {
+                finalXml.LoadXml(cmplteTile);
+            }
+            catch (Exception)
+            {
+                //Display the error XML if loading our finalized tile fails. Avoids the 800 or so failures showing in my Windows Store report right now.  (・△・') 
+                cmplteTile = rl.GetString("ErrorTileXML");
+                finalXml.LoadXml(cmplteTile);
+            }
 
             return finalXml;
 
