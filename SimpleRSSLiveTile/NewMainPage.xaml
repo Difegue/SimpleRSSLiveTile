@@ -175,7 +175,7 @@
             <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed"/>
             <AppBarButton x:Name="deleteFeedButton" Visibility="Collapsed" Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed"/>
 
-            <AppBarButton Label="Send Feedback" Click="SendFeedback">
+            <AppBarButton Label="Feedback" Click="SendFeedback">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;"  />
                 </AppBarButton.Icon>
@@ -187,7 +187,7 @@
                 </AppBarButton.Icon>
             </AppBarButton>
 
-            <AppBarButton Label="About RSS Live Tiles" Click="AboutSplash">
+            <AppBarButton Label="About" Click="AboutSplash">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;"  />
                 </AppBarButton.Icon>
