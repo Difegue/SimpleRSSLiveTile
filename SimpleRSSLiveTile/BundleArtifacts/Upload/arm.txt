@@ -1,5 +1,5 @@
-MainPackage=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_1.3.0.0_ARM.appx
-SymbolPackage=C:\Users\Patchouli\Desktop\SimpleRSSLiveTile_1.3.0.0\SimpleRSSLiveTile_1.3.0.0_ARM.appxsym
+MainPackage=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_1.3.1.0_ARM.appx
+SymbolPackage=C:\Users\Patchouli\Desktop\SimpleRSSLiveTile_1.3.1.0\SimpleRSSLiveTile_1.3.1.0_ARM.appxsym
 ResourcePack=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\_scale-100.appx
 ResourcePack=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\_scale-125.appx
 ResourcePack=C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\_scale-150.appx

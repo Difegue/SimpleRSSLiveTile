@@ -26,7 +26,7 @@ namespace BackgroundTasks
             // while asynchronous code is still running.
             BackgroundTaskDeferral deferral = taskInstance.GetDeferral();
 
-            await updatePinnedTiles();
+            await UpdatePinnedTilesAsync();
 
             //Re-register the task
             BackgroundTaskHandler.RegisterBackgroundTask();
@@ -35,14 +35,14 @@ namespace BackgroundTasks
             deferral.Complete();
         }
 
-        private async Task updatePinnedTiles()
+        private async Task UpdatePinnedTilesAsync()
         {
             //Wow it's fucking nothing
             FeedDataSource feedDB = new FeedDataSource();
             foreach (Feed f in feedDB.GetAllFeeds())
             {
-                if (f.isTilePinned())
-                    await f.updateTileAsync();
+                if (f.IsTilePinned())
+                    await f.UpdateTileAsync();
             }
         }
     }

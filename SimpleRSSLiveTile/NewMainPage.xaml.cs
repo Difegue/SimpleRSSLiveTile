@@ -147,7 +147,7 @@ namespace SimpleRSSLiveTile
                 {
                     deleteFeedButton.Visibility = Visibility.Collapsed;
                     FeedDataSource feedSrc = new FeedDataSource();
-                    feedSrc.GetFeedById(_lastSelectedFeed.Id).unpinTile();
+                    feedSrc.GetFeedById(_lastSelectedFeed.Id).UnpinTileAsync();
                     feedSrc.DeleteFeed(_lastSelectedFeed.Id);          
                     UpdateFeedList();
                     _lastSelectedFeed = null;
@@ -227,7 +227,7 @@ namespace SimpleRSSLiveTile
             FeedDataSource feedSrc = new FeedDataSource();
             foreach (var Feed in feedSrc.GetAllFeeds())
             {
-                feedList = feedList + Feed.getURL() + "\n";
+                feedList = feedList + Feed.GetURL() + "\n";
             }
 
             emailMessage.Body = feedList;

@@ -33,12 +33,12 @@ namespace SimpleRSSLiveTile.ViewModels
         {
             var viewModel = new FeedViewModel();
 
-            viewModel.Id = item.getId();
-            viewModel.Title = item.getTitle();
-            viewModel.URL = item.getURL();
-            viewModel.TileXML = item.getTileXML();
-            viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.getFeedDomain(); //Low effort
-            viewModel.usingAtomIcon = item.isUsingAtomIcon();
+            viewModel.Id = item.GetId();
+            viewModel.Title = item.GetTitle();
+            viewModel.URL = item.GetURL();
+            viewModel.TileXML = item.GetTileXML();
+            viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.GetFeedDomain(); //Low effort
+            viewModel.usingAtomIcon = item.IsUsingAtomIcon();
 
             return viewModel;
 

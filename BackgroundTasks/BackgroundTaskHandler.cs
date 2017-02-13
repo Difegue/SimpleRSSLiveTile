@@ -17,9 +17,7 @@ namespace BackgroundTasks
         {
             var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
             if (backgroundAccessStatus == BackgroundAccessStatus.AlwaysAllowed ||
-                backgroundAccessStatus == BackgroundAccessStatus.AllowedSubjectToSystemPolicy ||
-                backgroundAccessStatus == BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity ||
-                backgroundAccessStatus == BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
+                backgroundAccessStatus == BackgroundAccessStatus.AllowedSubjectToSystemPolicy)
             {
                 foreach (var task in BackgroundTaskRegistration.AllTasks)
                 {

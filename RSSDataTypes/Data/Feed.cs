@@ -62,15 +62,15 @@ namespace RSSDataTypes.Data
             useAtomIcon = false;
         }
 
-        public IAsyncOperation<bool> pinTileAsync()
+        public IAsyncOperation<bool> PinTileAsync()
         {
-            Task<bool> load = pinTile();
+            Task<bool> load = PinTile();
             IAsyncOperation<bool> to = load.AsAsyncOperation();
             return to;
         }
 
         //Pins Tile to Start Menu.
-        private async Task<bool> pinTile()
+        private async Task<bool> PinTile()
         {
             //Create the secondary tile
             string tileActivationArguments = feedId.ToString(); //We put the feed's ID as the activation argument => clicking on a sec.tile will open the app with that ID as argument
@@ -106,33 +106,33 @@ namespace RSSDataTypes.Data
 
 
             //Save the unique tile ID and immediately try updating it with the XML we have
-            await updateTile();
+            await UpdateTile();
 
             return true;
         }
 
         //Unpins Tile from Start Menu.
-        public async void unpinTile()
+        public async void UnpinTileAsync()
         {
             SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString());
 
-            if (isTilePinned())
+            if (IsTilePinned())
                 await secondaryTile.RequestDeleteForSelectionAsync(new Windows.Foundation.Rect());
 
         }
 
-        public IAsyncOperation<bool> updateTileAsync()
+        public IAsyncOperation<bool> UpdateTileAsync()
         {
-            Task<bool> load = updateTile();
+            Task<bool> load = UpdateTile();
             IAsyncOperation<bool> to = load.AsAsyncOperation();
             return to;
         }
 
         //Updates this feed's live tile, if it exists.
-        private async Task<bool> updateTile()
+        private async Task<bool> UpdateTile()
         {
-            SyndicationFeed feedData = await getFeedData();
-            XmlDocument tileXml = await buildTileXML(feedData);
+            SyndicationFeed feedData = await GetFeedData();
+            XmlDocument tileXml = await BuildTileXMLAsync(feedData);
             TileNotification tileNotification = new TileNotification(tileXml);
 
             TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
@@ -141,18 +141,18 @@ namespace RSSDataTypes.Data
             return true;
         }
 
-        public IAsyncOperation<string> getFeedTitleAsync()
+        public IAsyncOperation<string> GetFeedTitleAsync()
         {
-            Task<string> load = getFeedTitle();
+            Task<string> load = GetFeedTitle();
             IAsyncOperation<string> to = load.AsAsyncOperation();
             return to;
         }
 
         //Get the RSS Feed's title, or the URL if it doesn't have one.
-        private async Task<String> getFeedTitle()
+        private async Task<String> GetFeedTitle()
         {
 
-            SyndicationFeed feed = await getFeedData();
+            SyndicationFeed feed = await GetFeedData();
             if (feed != null)
             {
                 String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
@@ -164,15 +164,15 @@ namespace RSSDataTypes.Data
             return "Invalid RSS Feed";
         }
 
-        public IAsyncOperation<SyndicationFeed> getFeedDataAsync()
+        public IAsyncOperation<SyndicationFeed> GetFeedDataAsync()
         {
-            Task<SyndicationFeed> load = getFeedData();
+            Task<SyndicationFeed> load = GetFeedData();
             IAsyncOperation<SyndicationFeed> to = load.AsAsyncOperation();
             return to;
         }
 
         //Get RSS feed from URL, if it's incorrect return null
-        private async Task<SyndicationFeed> getFeedData()
+        private async Task<SyndicationFeed> GetFeedData()
         {
             SyndicationFeed feed = null;
 
@@ -199,25 +199,25 @@ namespace RSSDataTypes.Data
         }
 
         //Returns the main domain of the feed. Used for favicon retrieval.
-        public string getFeedDomain()
+        public string GetFeedDomain()
         {
             return new Uri(URL).Host;
         }
 
         public IAsyncOperation<string> getHiResFaviconAsync()
         {
-            Task<string> load = getHiResFavicon();
+            Task<string> load = GetHiResFaviconAsync();
             IAsyncOperation<string> to = load.AsAsyncOperation();
             return to;
         }
 
         //Tries getting a higher res favicon through the use of icons.better-idea.org. Falls back to Google S2 if there are no hi-res images.
-        private async Task<string> getHiResFavicon()
+        private async Task<string> GetHiResFaviconAsync()
         {
             var client = new HttpClient();
 
             //Before anything, we see if this Feed has an atom:icon. If it does, we return that, as it's made especially for the feed.
-            SyndicationFeed f = await getFeedData(); //Might return null for invalid feeds - we check for that down below
+            SyndicationFeed f = await GetFeedData(); //Might return null for invalid feeds - we check for that down below
 
             if (f != null && f.ImageUri != null && useAtomIcon)
                 return f.ImageUri.ToString();
@@ -225,13 +225,13 @@ namespace RSSDataTypes.Data
             //If it doesn't, we look at the favicons for its domain.
             try
             {
-                HttpResponseMessage response = await client.GetAsync(new Uri("https://icons.better-idea.org/allicons.json?url=" + getFeedDomain() + "&formats=png"));
+                HttpResponseMessage response = await client.GetAsync(new Uri("https://icons.better-idea.org/allicons.json?url=" + GetFeedDomain() + "&formats=png"));
                 var jsonString = await response.Content.ReadAsStringAsync();
 
                 JsonArray icons = JsonValue.Parse(jsonString).GetObject().GetNamedArray("icons");
                 
                 double largestWidth = 0;
-                string urlLargestIcon = "http://www.google.com/s2/favicons?domain_url=" + getFeedDomain(); //Fallback in case there are no png icons available
+                string urlLargestIcon = "http://www.google.com/s2/favicons?domain_url=" + GetFeedDomain(); //Fallback in case there are no png icons available
 
                 //Iterate on the icons array to get the image with the highest resolution
                 foreach (JsonValue icon in icons)
@@ -246,15 +246,15 @@ namespace RSSDataTypes.Data
 
                 return urlLargestIcon;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return "http://www.google.com/s2/favicons?domain_url=" + getFeedDomain();
+                return "http://www.google.com/s2/favicons?domain_url=" + GetFeedDomain();
             }
 
         }
 
         //Build a tile XML from the template we have and the feed's items.
-        private async Task<XmlDocument> buildTileXML(SyndicationFeed feed)
+        private async Task<XmlDocument> BuildTileXMLAsync(SyndicationFeed feed)
         {
             String cmplteTile = null;
             ResourceLoader rl = new ResourceLoader();
@@ -279,61 +279,68 @@ namespace RSSDataTypes.Data
 
                 //grab Favicon and insert its url in the XML where the #favicon# tag is
                 String xmlBeforeDataInsertion = customXml;
-                String faviconURL = await getHiResFavicon();  
+                String faviconURL = await GetHiResFaviconAsync();  
                 xmlBeforeDataInsertion = 
                     xmlBeforeDataInsertion.Replace("#favicon#", faviconURL); //low effort strikes again
 
-                tileXml.LoadXml(xmlBeforeDataInsertion);
+                try { 
+                    tileXml.LoadXml(xmlBeforeDataInsertion);
 
-                //Edit tile title
-                XmlElement feedTitle = (XmlElement)tileXml.GetElementsByTagName("visual")[0];
+                    //Edit tile title
+                    XmlElement feedTitle = (XmlElement)tileXml.GetElementsByTagName("visual")[0];
 
-                String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
-                feedTitle.SetAttribute("displayName", feedTitleText);
+                    String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
+                    feedTitle.SetAttribute("displayName", feedTitleText);
 
-                // Grab feed items and add them to the tiles.
-                foreach (var item in feed.Items)
-                {
-                    //item.Summary;
-                    var title = item.Title;
-                    var desc = item.Summary;
+                    // Grab feed items and add them to the tiles.
+                    foreach (var item in feed.Items)
+                    {
+                        //item.Summary;
+                        var title = item.Title;
+                        var desc = item.Summary;
 
-                    string titleText = title == null ? String.Empty : title.Text;
-                    string titleDesc = desc == null ? String.Empty : desc.Text;
-                    titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
+                        string titleText = title == null ? String.Empty : title.Text;
+                        string titleDesc = desc == null ? String.Empty : desc.Text;
+                        titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
 
-                    //Strip all XML/HTML tags.
-                    titleText = System.Net.WebUtility.HtmlDecode(titleText);
-                    titleDesc = System.Net.WebUtility.HtmlDecode(titleDesc);
-                    HtmlDocument doc = new HtmlDocument();
-                    doc.LoadHtml(titleText);
-                    titleText = doc.DocumentNode.InnerText;
-                    doc.LoadHtml(titleDesc);
-                    titleDesc = doc.DocumentNode.InnerText;
+                        //Strip all XML/HTML tags.
+                        titleText = System.Net.WebUtility.HtmlDecode(titleText);
+                        titleDesc = System.Net.WebUtility.HtmlDecode(titleDesc);
+                        HtmlDocument doc = new HtmlDocument();
+                        doc.LoadHtml(titleText);
+                        titleText = doc.DocumentNode.InnerText;
+                        doc.LoadHtml(titleDesc);
+                        titleDesc = doc.DocumentNode.InnerText;
 
-                    if (titleText.Length > 150) //A tile can't show more than 134 characters on a line (TileWide), so we limit each item to 150 chars. Also helps keeping the xml payload under 5kb.
-                        titleText = titleText.Substring(0, 150);
+                        if (titleText.Length > 150) //A tile can't show more than 134 characters on a line (TileWide), so we limit each item to 150 chars. Also helps keeping the xml payload under 5kb.
+                            titleText = titleText.Substring(0, 150);
 
-                   
-                    if (titleDesc.Length > 150)
-                        titleDesc = titleDesc.Substring(0, 150);
 
-                    XmlNodeList nodeListTitle = tileXml.GetElementsByTagName(textElementName[itemCount]);
-                    XmlNodeList nodeListDesc = tileXml.GetElementsByTagName(descElementName[itemCount]);
+                        if (titleDesc.Length > 150)
+                            titleDesc = titleDesc.Substring(0, 150);
 
-                    foreach (IXmlNode node in nodeListTitle)
-                        node.InnerText = titleText;
+                        XmlNodeList nodeListTitle = tileXml.GetElementsByTagName(textElementName[itemCount]);
+                        XmlNodeList nodeListDesc = tileXml.GetElementsByTagName(descElementName[itemCount]);
 
-                    foreach (IXmlNode node in nodeListDesc)
-                        node.InnerText = titleDesc;
+                        foreach (IXmlNode node in nodeListTitle)
+                            node.InnerText = titleText;
 
-                    // Don't get more than 4 items.
-                    itemCount++;
-                    if (itemCount > 3)
-                        break;
+                        foreach (IXmlNode node in nodeListDesc)
+                            node.InnerText = titleDesc;
+
+                        // Don't get more than 4 items.
+                        itemCount++;
+                        if (itemCount > 3)
+                            break;
+                    }
+
+                    cmplteTile = tileXml.GetXml();
                 }
-
-                cmplteTile = tileXml.GetXml();
+                catch (Exception)
+                {
+                    //Return the error tile if we get an exception during treatment (likely caused by the initial LoadXML)
+                    cmplteTile = rl.GetString("ErrorTileXML");
+                }   
 
             }
 
@@ -369,7 +376,7 @@ namespace RSSDataTypes.Data
         }
 
         //Try loading the custom XML as a Tile to see if it's valid.
-        public Boolean testTileXML()
+        public Boolean TestTileXML()
         {
             try
             {
@@ -388,47 +395,47 @@ namespace RSSDataTypes.Data
         }
 
 
-        public string getTitle()
+        public string GetTitle()
         {
             return feedTitle;
         }
 
-        public void setTitle(string title)
+        public void SetTitle(string title)
         {
             feedTitle = title;
         }
 
-        public string getURL()
+        public string GetURL()
         {
             return URL;
         }
 
-        public string getTileXML()
+        public string GetTileXML()
         {
             return customXml;
         }
 
-        public Boolean isTilePinned()
+        public Boolean IsTilePinned()
         {
             return SecondaryTile.Exists(feedId.ToString());
         }
 
-        public int getId()
+        public int GetId()
         {
             return feedId;
         }
 
-        public Boolean isTileValid()
+        public Boolean IsTileValid()
         {
             return isValid;
         }
 
-        public void setAtomIconUse(bool b)
+        public void SetAtomIconUse(bool b)
         {
             useAtomIcon = b;
         }
 
-        public bool isUsingAtomIcon()
+        public bool IsUsingAtomIcon()
         {
             return useAtomIcon;
         }

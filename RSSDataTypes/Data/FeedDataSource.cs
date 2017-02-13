@@ -40,7 +40,7 @@ namespace RSSDataTypes.Data
                     Feed f = JsonConvert.DeserializeObject<Feed>(feedJSON);
                     allFeeds.Add(f);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //If we couldn't deserialize a Feed from this ID, it's not a Feed. 
                     //If the feedID is invalid (ergo not an int), remove the matching value from the storage
@@ -56,7 +56,7 @@ namespace RSSDataTypes.Data
 
             String feedJSON = JsonConvert.SerializeObject(f);
 
-            feedDB.Values[f.getId().ToString()] = feedJSON;
+            feedDB.Values[f.GetId().ToString()] = feedJSON;
 
         }
 

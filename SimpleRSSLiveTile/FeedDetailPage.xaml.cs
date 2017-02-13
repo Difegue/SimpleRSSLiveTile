@@ -62,10 +62,10 @@ namespace SimpleRSSLiveTile
             
             Feed feedToSave = new Feed(Feed.Id, "New RSS Feed", feedInput.Text, tileXML);
 
-            feedToSave.setAtomIconUse(atomIconToggle.IsOn);
-            String feedTitle= await feedToSave.getFeedTitleAsync();
+            feedToSave.SetAtomIconUse(atomIconToggle.IsOn);
+            String feedTitle= await feedToSave.GetFeedTitleAsync();
 
-            feedToSave.setTitle(feedTitle);
+            feedToSave.SetTitle(feedTitle);
 
             return feedToSave;
 
@@ -81,7 +81,7 @@ namespace SimpleRSSLiveTile
             Feed f = await BuildFeedFromPage();
 
             //Test XML.
-            Boolean validXML = f.testTileXML();
+            Boolean validXML = f.TestTileXML();
             if (!validXML)
             {
                 outputStackPanel.Visibility = Visibility.Visible;
@@ -93,7 +93,7 @@ namespace SimpleRSSLiveTile
                 return;
             }
             
-            if (f.isTileValid())
+            if (f.IsTileValid())
             {
                 //We're good, save the feed and enable pinning.
                 feedDB.SetFeed(f);
@@ -104,16 +104,16 @@ namespace SimpleRSSLiveTile
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Green);
 
                 //Update feed Title and favicon
-                feedTitle.Text = f.getTitle();
+                feedTitle.Text = f.GetTitle();
                 String faviconURL = await f.getHiResFaviconAsync();
                 feedHQFavicon.Source = new BitmapImage(new Uri(faviconURL, UriKind.Absolute));
 
                 //Maybe we're saving a tile already pinned, in which case we'll just update it
-                if (feedDB.GetFeedById(f.getId()).isTilePinned()) 
+                if (feedDB.GetFeedById(f.GetId()).IsTilePinned()) 
                 {
                     greetingOutput.Text = "Feed Saved ! Live Tile will be automatically updated.";
                     unpinButton.Visibility = Visibility.Visible;
-                    await f.updateTileAsync();
+                    await f.UpdateTileAsync();
                 }
                 else
                 {
@@ -142,14 +142,14 @@ namespace SimpleRSSLiveTile
             
             //Check if the feed built from the page is valid.
             //If not, ask the user to save his feed.
-            if (f.isTileValid())
+            if (f.IsTileValid())
             {
-                await f.pinTileAsync();
+                await f.PinTileAsync();
 
                 //Save pinned feed state
                 feedDB.SetFeed(f);
 
-                if (f.isTilePinned())
+                if (f.IsTilePinned())
                 {
                     outputStackPanel.Visibility = Visibility.Visible;
                     symbolOutput.Symbol = Symbol.Accept;
@@ -178,12 +178,12 @@ namespace SimpleRSSLiveTile
             Feed f = await BuildFeedFromPage();
             Progress.Visibility = Visibility.Visible;
            
-            f.unpinTile();
+            f.UnpinTileAsync();
 
             //Save unpinned feed state
             feedDB.SetFeed(f);
 
-            if (!f.isTilePinned())
+            if (!f.IsTilePinned())
             {
                 outputStackPanel.Visibility = Visibility.Visible;
                 symbolOutput.Symbol = Symbol.Accept;
@@ -192,7 +192,7 @@ namespace SimpleRSSLiveTile
                 greetingOutput.Text = "Feed unpinned.";
                 unpinButton.Visibility = Visibility.Collapsed;
 
-                if (f.isTileValid())
+                if (f.IsTileValid())
                     pinButton.Visibility = Visibility.Visible;
             }
 
@@ -340,9 +340,9 @@ namespace SimpleRSSLiveTile
                 outputStackPanel.Visibility = Visibility.Collapsed;
 
                 //Check if feed is pinned and set visibility of buttons in consequence
-                if (feedDB.GetFeedById(Feed.Id).isTilePinned())
+                if (feedDB.GetFeedById(Feed.Id).IsTilePinned())
                     unpinButton.Visibility = Visibility.Visible;
-                else if (feedDB.GetFeedById(Feed.Id).isTileValid())
+                else if (feedDB.GetFeedById(Feed.Id).IsTileValid())
                     pinButton.Visibility = Visibility.Visible;
 
                 if (!ShouldGoToWideState())
@@ -430,7 +430,7 @@ namespace SimpleRSSLiveTile
             if ((int)result.Id == 0)
             {
                 FeedDataSource feedSrc = new FeedDataSource();
-                feedSrc.GetFeedById(Feed.Id).unpinTile();
+                feedSrc.GetFeedById(Feed.Id).UnpinTileAsync();
                 feedSrc.DeleteFeed(Feed.Id);
 
                 NavigateBackForWideState(useTransition: false);
@@ -448,7 +448,7 @@ namespace SimpleRSSLiveTile
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
-                f.setAtomIconUse(toggleSwitch.IsOn);
+                f.SetAtomIconUse(toggleSwitch.IsOn);
                 String newIconURL = await f.getHiResFaviconAsync();
                 feedHQFavicon.Source = new BitmapImage(new Uri(newIconURL, UriKind.Absolute));
             }
