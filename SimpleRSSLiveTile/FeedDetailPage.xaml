@@ -22,21 +22,26 @@
 
                 <TextBlock>Write the XML for your Tile in the box down there. 
                            <LineBreak/> <LineBreak/> 
-                            Use special tags &lt;title#&gt;&lt;/title#&gt; and &lt;desc#&gt;&lt;/desc#&gt; 
+                            Use special tags &lt;title1&gt;&lt;/title1&gt; through &lt;title4&gt;&lt;/title4&gt; 
+                            <LineBreak/> 
+                            and &lt;desc1&gt;&lt;/desc1&gt; through &lt;desc4&gt;&lt;/desc4&gt; 
                             <LineBreak/> 
                             to indicate the position of your RSS feed's titles and content. 
-                            <LineBreak/> 
-                            (# = order of your item in the feed, up to 4) 
                             <LineBreak/> <LineBreak/>  
+                            In a similar way, you can use the tags 
+                            <LineBreak/>
+                            #img1# through #img4# to display images from the feed items.
+                            <LineBreak/><LineBreak/>
                             You can also show the feed's favicon image 
                             <LineBreak/>
                             with the #favicon# tag.
                             <LineBreak/> <LineBreak/>
+                            Be sure to check the examples for some extra help.<LineBreak/>
                             When you're done, hit Save ! 
                             <LineBreak/>
                             You'll be able to pin your Live Tile if the XML is valid.</TextBlock>
 
-                <HyperlinkButton NavigateUri="https://msdn.microsoft.com/en-us/library/windows/apps/mt590880.aspx">Official Adaptive Tile Documentation</HyperlinkButton>
+                <HyperlinkButton NavigateUri="https://docs.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-create-adaptive-tiles">Official Adaptive Tile Documentation</HyperlinkButton>
             </StackPanel>
 
             <Flyout.FlyoutPresenterStyle>

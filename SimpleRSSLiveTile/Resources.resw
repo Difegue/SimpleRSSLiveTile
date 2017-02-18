@@ -218,4 +218,120 @@
   &lt;/visual&gt;
 &lt;/tile&gt;</value>
   </data>
+  <data name="Example1XML" xml:space="preserve">
+    <value>&lt;tile&gt;
+  &lt;visual displayName="Tile Display Name"&gt;
+
+    &lt;binding template="TileSmall"&gt;
+      &lt;image src="#favicon#" placement="background"/&gt;
+    &lt;/binding&gt;
+
+    &lt;binding template="TileMedium"&gt;
+         &lt;image placement="peek" src="#favicon#"/&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileWide" branding="nameAndLogo"&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="base" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+          &lt;text hint-style="captionsubtle" hint-wrap="true" &gt;&lt;desc1&gt;&lt;/desc1&gt;&lt;/text&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+     &lt;/binding&gt;
+
+    &lt;binding template="TileLarge" branding="nameAndLogo"&gt;
+     &lt;image src="#favicon#" placement="background"/&gt;
+
+     &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="base" hint-wrap="true"&gt;Latest on Workplace Stack: &lt;/text&gt;
+        &lt;/subgroup&gt;
+
+        &lt;subgroup&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;👉&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+           &lt;text/&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;👉&lt;title2&gt;&lt;/title2&gt;&lt;/text&gt;
+          &lt;text/&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+    &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;👉&lt;title3&gt;&lt;/title3&gt;&lt;/text&gt;
+          &lt;text/&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+    &lt;/binding&gt;
+
+  &lt;/visual&gt;
+&lt;/tile&gt;</value>
+  </data>
+  <data name="Example2XML" xml:space="preserve">
+    <value>&lt;tile&gt;
+  &lt;visual displayName="Tile Display Name"&gt;
+
+    &lt;binding template="TileSmall"&gt;
+      &lt;image src="#favicon#" placement="background"/&gt;
+    &lt;/binding&gt;
+
+    &lt;binding template="TileMedium"&gt;
+    &lt;image src="#img1#" placement="background"/&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="subtitle" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+          
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileWide" branding="none"&gt;
+     &lt;group&gt;
+    &lt;subgroup&gt;
+       &lt;text hint-style="base"  hint-wrap="true"&gt;Latest XKCD:&lt;/text&gt;
+&lt;text hint-style="subtitle"  hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+    &lt;/subgroup&gt;
+    &lt;subgroup&gt;
+      &lt;image src="#img1#" hint-crop="circle" /&gt;
+    &lt;/subgroup&gt;
+  &lt;/group&gt;
+
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileLarge" branding="none"&gt;
+&lt;group&gt;
+    &lt;subgroup&gt;
+       &lt;text hint-style="base"  hint-wrap="true"&gt;New XKCDs:&lt;/text&gt;
+&lt;text hint-style="subtitle"  hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+    &lt;/subgroup&gt;
+    &lt;subgroup&gt;
+      &lt;image src="#img1#" hint-crop="circle" /&gt;
+    &lt;/subgroup&gt;
+  &lt;/group&gt;
+
+&lt;group&gt;
+    &lt;subgroup&gt;
+&lt;text hint-style="subtitle"  hint-wrap="true"&gt;&lt;title2&gt;&lt;/title2&gt;&lt;/text&gt;
+    &lt;/subgroup&gt;
+    &lt;subgroup&gt;
+      &lt;image src="#img2#" hint-crop="circle" /&gt;
+    &lt;/subgroup&gt;
+  &lt;/group&gt;
+    &lt;/binding&gt;
+
+  &lt;/visual&gt;
+&lt;/tile&gt;</value>
+  </data>
 </root>

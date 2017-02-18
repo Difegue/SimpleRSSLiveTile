@@ -175,6 +175,12 @@
             <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed"/>
             <AppBarButton x:Name="deleteFeedButton" Visibility="Collapsed" Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed"/>
 
+            <AppBarButton Label="Examples" Click="SendFeedback">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;"  />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            
             <AppBarButton Label="Feedback" Click="SendFeedback">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;"  />

@@ -259,6 +259,10 @@ namespace RSSDataTypes.Data
             String cmplteTile = null;
             ResourceLoader rl = new ResourceLoader();
 
+            String[] imageForItem = new String[4];
+            for (int i = 0; i < 4; i++)
+                imageForItem[i] = "";
+
             if (feed == null)
             {
                 //Return a bogus tile saying the feed is not valid. 
@@ -279,11 +283,11 @@ namespace RSSDataTypes.Data
 
                 //grab Favicon and insert its url in the XML where the #favicon# tag is
                 String xmlBeforeDataInsertion = customXml;
-                String faviconURL = await GetHiResFaviconAsync();  
-                xmlBeforeDataInsertion = 
+                String faviconURL = await GetHiResFaviconAsync();
+                xmlBeforeDataInsertion =
                     xmlBeforeDataInsertion.Replace("#favicon#", faviconURL); //low effort strikes again
 
-                try { 
+                try {
                     tileXml.LoadXml(xmlBeforeDataInsertion);
 
                     //Edit tile title
@@ -301,16 +305,32 @@ namespace RSSDataTypes.Data
 
                         string titleText = title == null ? String.Empty : title.Text;
                         string titleDesc = desc == null ? String.Empty : desc.Text;
-                        titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
-
-                        //Strip all XML/HTML tags.
+                        
                         titleText = System.Net.WebUtility.HtmlDecode(titleText);
                         titleDesc = System.Net.WebUtility.HtmlDecode(titleDesc);
+                        
+                        //Try getting an image for this item.
+                        string imgUrl = GetImageFromItem(titleDesc);
+                        if (imgUrl == "")
+                        {
+                            //If we couldn't find an image in the Summary, we look in the Content as well before giving up.
+                            var content = item.Content;
+
+                            string titleContent = content == null ? String.Empty : content.Text;
+                            titleContent = System.Net.WebUtility.HtmlDecode(titleContent);
+                            imgUrl = GetImageFromItem(titleContent);
+                        }
+                        imageForItem[itemCount] = imgUrl;
+
+
+                        //Strip all XML/HTML tags.
                         HtmlDocument doc = new HtmlDocument();
                         doc.LoadHtml(titleText);
                         titleText = doc.DocumentNode.InnerText;
                         doc.LoadHtml(titleDesc);
                         titleDesc = doc.DocumentNode.InnerText;
+
+                        titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
 
                         if (titleText.Length > 150) //A tile can't show more than 134 characters on a line (TileWide), so we limit each item to 150 chars. Also helps keeping the xml payload under 5kb.
                             titleText = titleText.Substring(0, 150);
@@ -340,11 +360,12 @@ namespace RSSDataTypes.Data
                 {
                     //Return the error tile if we get an exception during treatment (likely caused by the initial LoadXML)
                     cmplteTile = rl.GetString("ErrorTileXML");
-                }   
+                }
 
             }
 
             //The tags used to insert the RSS elements in the XML need to be removed for the tile to properly appear in the Start Menu.
+            //We also replace the image tags here with the URLs we obtained while parsing the feed items.
             //HERE COMES THE QUALITY
             foreach (string tag in textElementName)
             {
@@ -357,6 +378,9 @@ namespace RSSDataTypes.Data
                 cmplteTile = cmplteTile.Replace("<" + tag + ">", "");
                 cmplteTile = cmplteTile.Replace("</" + tag + ">", "");
             }
+
+            for (int i = 0; i<4; i++)
+                cmplteTile = cmplteTile.Replace("#img"+(i+1)+"#", imageForItem[i]);
 
             //Reload the XML after corrections have been made
             XmlDocument finalXml = new Windows.Data.Xml.Dom.XmlDocument();
@@ -373,6 +397,26 @@ namespace RSSDataTypes.Data
 
             return finalXml;
 
+        }
+
+        //Use HtmlAgilityPack to find the first <img> tag, and return its src attribute.
+        private string GetImageFromItem(string html)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            string ret;
+
+            try
+            {
+                HtmlAttribute att = doc.DocumentNode.ChildNodes.FindFirst("img").Attributes["src"];
+                ret = att.Value;
+            }
+            catch (Exception)
+            {
+                ret = "";
+            }
+
+            return ret;
         }
 
         //Try loading the custom XML as a Tile to see if it's valid.
