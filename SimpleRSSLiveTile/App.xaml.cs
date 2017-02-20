@@ -87,7 +87,8 @@ namespace SimpleRSSLiveTile
 
                 if (rootFrame == null)
                     Application.Current.Exit();
-                //launchArgument = ""; //Nullify the argument since it makes the app crash otherwise. -- hella bad design on that one
+
+                launchArgument = ""; //Nullify the argument since it makes the app crash otherwise.
             }
 
 

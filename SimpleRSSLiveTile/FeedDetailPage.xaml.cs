@@ -123,6 +123,9 @@ namespace SimpleRSSLiveTile
        
                 Progress.Visibility = Visibility.Collapsed;
                 outputStackPanel.Visibility = Visibility.Visible;
+
+                //Update list in main page
+                GlobalMainPageReference.mainPage.UpdateFeedList();
             }
             else
             {

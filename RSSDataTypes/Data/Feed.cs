@@ -40,6 +40,17 @@ namespace RSSDataTypes.Data
         {
         }
 
+        //
+        // Summary:
+        //     Create a new Feed, storable in FeedDataSource.
+        //
+        // Parameters:
+        //   i:
+        //     ID of the Feed.
+        //   t:
+        //     Title of the Feed.
+        //   u: 
+        //     URL of the Feed.
         public Feed(int i, string t, string u)
         {
             ResourceLoader rl = new ResourceLoader();
@@ -52,6 +63,19 @@ namespace RSSDataTypes.Data
             useAtomIcon = false;
         }
 
+        //
+        // Summary:
+        //     Create a new Feed, storable in FeedDataSource, with custom XML.
+        //
+        // Parameters:
+        //   i:
+        //     ID of the Feed.
+        //   t:
+        //     Title of the Feed.
+        //   u: 
+        //     URL of the Feed.
+        //   x:
+        //     Custom XML for the Feed.
         public Feed(int i, string t, string u, string x)
         {
             feedId = i;
@@ -68,6 +92,116 @@ namespace RSSDataTypes.Data
             IAsyncOperation<bool> to = load.AsAsyncOperation();
             return to;
         }
+
+        //Unpins Tile from Start Menu.
+        public async void UnpinTileAsync()
+        {
+            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString());
+
+            if (IsTilePinned())
+                await secondaryTile.RequestDeleteForSelectionAsync(new Windows.Foundation.Rect());
+
+        }
+
+        public IAsyncOperation<bool> UpdateTileAsync()
+        {
+            Task<bool> load = UpdateTile();
+            IAsyncOperation<bool> to = load.AsAsyncOperation();
+            return to;
+        }
+
+
+        public IAsyncOperation<string> GetFeedTitleAsync()
+        {
+            Task<string> load = GetFeedTitle();
+            IAsyncOperation<string> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        public IAsyncOperation<SyndicationFeed> GetFeedDataAsync()
+        {
+            Task<SyndicationFeed> load = GetFeedData();
+            IAsyncOperation<SyndicationFeed> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Returns the main domain of the feed. Used for favicon retrieval.
+        public string GetFeedDomain()
+        {
+            return new Uri(URL).Host;
+        }
+
+        public IAsyncOperation<string> getHiResFaviconAsync()
+        {
+            Task<string> load = GetHiResFaviconAsync();
+            IAsyncOperation<string> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Try loading the custom XML as a Tile to see if it's valid.
+        public Boolean TestTileXML()
+        {
+            try
+            {
+                XmlDocument tileXml = new Windows.Data.Xml.Dom.XmlDocument();
+                tileXml.LoadXml(customXml); //if we can't load the XML, it's probably not valid.
+                TileNotification tileTest = new TileNotification(tileXml);
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public string GetTitle()
+        {
+            return feedTitle;
+        }
+
+        public void SetTitle(string title)
+        {
+            feedTitle = title;
+        }
+
+        public string GetURL()
+        {
+            return URL;
+        }
+
+        public string GetTileXML()
+        {
+            return customXml;
+        }
+
+        public Boolean IsTilePinned()
+        {
+            return SecondaryTile.Exists(feedId.ToString());
+        }
+
+        public int GetId()
+        {
+            return feedId;
+        }
+
+        public Boolean IsTileValid()
+        {
+            return isValid;
+        }
+
+        public void SetAtomIconUse(bool b)
+        {
+            useAtomIcon = b;
+        }
+
+        public bool IsUsingAtomIcon()
+        {
+            return useAtomIcon;
+        }
+
 
         //Pins Tile to Start Menu.
         private async Task<bool> PinTile()
@@ -111,22 +245,6 @@ namespace RSSDataTypes.Data
             return true;
         }
 
-        //Unpins Tile from Start Menu.
-        public async void UnpinTileAsync()
-        {
-            SecondaryTile secondaryTile = new SecondaryTile(feedId.ToString());
-
-            if (IsTilePinned())
-                await secondaryTile.RequestDeleteForSelectionAsync(new Windows.Foundation.Rect());
-
-        }
-
-        public IAsyncOperation<bool> UpdateTileAsync()
-        {
-            Task<bool> load = UpdateTile();
-            IAsyncOperation<bool> to = load.AsAsyncOperation();
-            return to;
-        }
 
         //Updates this feed's live tile, if it exists.
         private async Task<bool> UpdateTile()
@@ -139,13 +257,6 @@ namespace RSSDataTypes.Data
             secondaryTileUpdater.Update(tileNotification);
 
             return true;
-        }
-
-        public IAsyncOperation<string> GetFeedTitleAsync()
-        {
-            Task<string> load = GetFeedTitle();
-            IAsyncOperation<string> to = load.AsAsyncOperation();
-            return to;
         }
 
         //Get the RSS Feed's title, or the URL if it doesn't have one.
@@ -162,13 +273,6 @@ namespace RSSDataTypes.Data
 
             isValid = false;
             return "Invalid RSS Feed";
-        }
-
-        public IAsyncOperation<SyndicationFeed> GetFeedDataAsync()
-        {
-            Task<SyndicationFeed> load = GetFeedData();
-            IAsyncOperation<SyndicationFeed> to = load.AsAsyncOperation();
-            return to;
         }
 
         //Get RSS feed from URL, if it's incorrect return null
@@ -196,19 +300,6 @@ namespace RSSDataTypes.Data
             }
 
             return feed;
-        }
-
-        //Returns the main domain of the feed. Used for favicon retrieval.
-        public string GetFeedDomain()
-        {
-            return new Uri(URL).Host;
-        }
-
-        public IAsyncOperation<string> getHiResFaviconAsync()
-        {
-            Task<string> load = GetHiResFaviconAsync();
-            IAsyncOperation<string> to = load.AsAsyncOperation();
-            return to;
         }
 
         //Tries getting a higher res favicon through the use of icons.better-idea.org. Falls back to Google S2 if there are no hi-res images.
@@ -417,71 +508,6 @@ namespace RSSDataTypes.Data
             }
 
             return ret;
-        }
-
-        //Try loading the custom XML as a Tile to see if it's valid.
-        public Boolean TestTileXML()
-        {
-            try
-            {
-                XmlDocument tileXml = new Windows.Data.Xml.Dom.XmlDocument();
-                tileXml.LoadXml(customXml); //if we can't load the XML, it's probably not valid.
-                TileNotification tileTest = new TileNotification(tileXml);
-
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-
-        }
-
-
-        public string GetTitle()
-        {
-            return feedTitle;
-        }
-
-        public void SetTitle(string title)
-        {
-            feedTitle = title;
-        }
-
-        public string GetURL()
-        {
-            return URL;
-        }
-
-        public string GetTileXML()
-        {
-            return customXml;
-        }
-
-        public Boolean IsTilePinned()
-        {
-            return SecondaryTile.Exists(feedId.ToString());
-        }
-
-        public int GetId()
-        {
-            return feedId;
-        }
-
-        public Boolean IsTileValid()
-        {
-            return isValid;
-        }
-
-        public void SetAtomIconUse(bool b)
-        {
-            useAtomIcon = b;
-        }
-
-        public bool IsUsingAtomIcon()
-        {
-            return useAtomIcon;
         }
 
     }

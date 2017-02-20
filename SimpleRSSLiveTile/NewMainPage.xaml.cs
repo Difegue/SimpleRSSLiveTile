@@ -8,10 +8,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel.Store;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Services.Store;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -28,7 +29,9 @@ namespace SimpleRSSLiveTile
     {
         private FeedViewModel _lastSelectedFeed;
         private ObservableCollection<FeedViewModel> FeedList;
-        private LicenseInformation doshMoneyDollar;
+
+        private StoreContext context = null;
+        private string donationStoreID = "9nblggh50zp6";
 
         public NewMainPage()
         {
@@ -36,30 +39,30 @@ namespace SimpleRSSLiveTile
 
         }
 
-        //Trial/Non Trial differentiation. (Pretty trivial but fun stuff)
-        //Still not used 
+        //Check for add-on purchases.
         private async void initializeIAP()
         {
             // Get the license info
-            // The next line is commented out for testing.
-            // doshMoneyDollar = CurrentApp.LicenseInformation;
+            context = StoreContext.GetDefault();
 
-            // The next line is commented out for production/release.  
-            StorageFile proxyFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/WindowsStoreProxy.xml"));
-            await CurrentAppSimulator.ReloadSimulatorAsync(proxyFile);
+            StoreAppLicense appLicense = await context.GetAppLicenseAsync();
 
-            doshMoneyDollar = CurrentAppSimulator.LicenseInformation;
-
-            if (doshMoneyDollar.ProductLicenses["donationFromTomodachi"].IsActive)
+            // Access the add on licenses for add-ons for this app.
+            foreach (KeyValuePair<string, StoreLicense> item in appLicense.AddOnLicenses)
             {
-                donateButton.Label = "Arigato !";
-                
-                FontIcon fIcon = new FontIcon();
-                fIcon.Glyph = "🤑";
-                donateButton.Icon = fIcon;
+                StoreLicense addOnLicense = item.Value;
 
+                if (addOnLicense.IsActive) //We only have one add-on in this use-case, so this is fine. 
+                    AcknowledgeDonation();
             }
 
+        }
+
+        private void AcknowledgeDonation()
+        {
+            donateButton.Label = "Arigato !";
+            donateButton.Icon.Foreground = new SolidColorBrush(Colors.DarkGoldenrod);
+            donateButton.IsEnabled = false;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -70,7 +73,6 @@ namespace SimpleRSSLiveTile
             BackgroundTaskHandler.RegisterBackgroundTask();
 
             FeedList = new ObservableCollection<FeedViewModel>();
-
             FeedDataSource feedSrc = new FeedDataSource();
             
             foreach (var Feed in feedSrc.GetAllFeeds())
@@ -90,10 +92,14 @@ namespace SimpleRSSLiveTile
             MasterListView.ItemsSource = FeedList;
             UpdateForVisualState(AdaptiveStates.CurrentState);
 
-            //initializeIAP();
+            //Look if user has add-on purchases registered.
+            initializeIAP();
+
+            //Update reference to mainPage in GlobalReference
+            GlobalMainPageReference.mainPage = this;
         }
 
-        private void UpdateFeedList()
+        public void UpdateFeedList()
         {
             FeedList.Clear();
             FeedDataSource feedSrc = new FeedDataSource();
@@ -158,17 +164,21 @@ namespace SimpleRSSLiveTile
 
         private async void OpenDonate(object sender, RoutedEventArgs e)
         {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sugoi%40cock%2eli&lc=FR&item_name=Sugoi%20Apps%20for%20Tomodachis%20United&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"));
-            //string aboutDialog = "If you find this thing useful, consider buying the app ! Or at ";
-            //MessageDialog msgbox = new MessageDialog(aboutDialog, "Here comes the money");
-            //await msgbox.ShowAsync();
-        }
+            StorePurchaseResult result = await context.RequestPurchaseAsync(donationStoreID);
 
-        private async void AboutSplash(object sender, RoutedEventArgs e)
-        {
-            string aboutDialog = "Previously Simple RSS Live Tile. \nI still use this for my bank. \nSource code available 👉 https://github.com/Difegue/SimpleRSSLiveTile";
-            MessageDialog msgbox = new MessageDialog(aboutDialog, "About RSS Live Tiles 👌🐔");
-            await msgbox.ShowAsync();
+            switch (result.Status)
+            {
+                case StorePurchaseStatus.AlreadyPurchased:
+                    AcknowledgeDonation();
+                    break;
+
+                case StorePurchaseStatus.Succeeded:
+                    AcknowledgeDonation();
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         //Add a new blank feed, and refresh the page so it appears in the list.
@@ -177,10 +187,13 @@ namespace SimpleRSSLiveTile
             
             FeedDataSource feedDB = new FeedDataSource();
 
-            //Unique ID. Unless people add tons of feeds(at which point they're probably better off using something else), 
-            //collisions have no reason to happen.
+            //Unique ID. 
+            int i = 1337;
             Random random = new Random();
-            int i = random.Next();
+
+            //It's like I'm really programming pomf.se
+            while (feedDB.FeedExists(i.ToString()))
+                { i = random.Next(); }
 
             Feed f = new Feed(i, "New RSS Feed", "http://example.com/");
 
@@ -237,6 +250,44 @@ namespace SimpleRSSLiveTile
             
 
             await Windows.ApplicationModel.Email.EmailManager.ShowComposeNewEmailAsync(emailMessage);
+        }
+
+        private void OpenExamples(object sender, RoutedEventArgs e)
+        {
+            if (AdaptiveStates.CurrentState == NarrowState)
+            {
+                // Use "drill in" transition for navigating from master list to detail view
+                Frame.Navigate(typeof(ExamplePage), new DrillInNavigationTransitionInfo());
+            }
+            else
+            {
+                deleteFeedButton.Visibility = Visibility.Collapsed;
+                contentFrame.Children.Clear();
+                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
+                Frame f = new Frame();
+                f.Navigate(typeof(ExamplePage));
+                contentFrame.Children.Add(f);
+
+            }
+        }
+
+        private void OpenAbout(object sender, RoutedEventArgs e)
+        {
+            if (AdaptiveStates.CurrentState == NarrowState)
+            {
+                // Use "drill in" transition for navigating from master list to detail view
+                Frame.Navigate(typeof(AboutPage), new DrillInNavigationTransitionInfo());
+            }
+            else
+            {
+                deleteFeedButton.Visibility = Visibility.Collapsed;
+                contentFrame.Children.Clear();
+                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
+                Frame f = new Frame();
+                f.Navigate(typeof(AboutPage));
+                contentFrame.Children.Add(f);
+
+            }
         }
     }
 }

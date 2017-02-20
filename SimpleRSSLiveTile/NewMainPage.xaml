@@ -66,7 +66,7 @@
         </DataTemplate>
     </Page.Resources>
 
-    <Grid x:Name="LayoutRoot" Loaded="LayoutRoot_Loaded">
+    <Grid x:Name="LayoutRoot" Loaded="LayoutRoot_Loaded" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveStates" CurrentStateChanged="AdaptiveStates_CurrentStateChanged">
                 <VisualState x:Name="DefaultState">
@@ -147,6 +147,9 @@
                      Your feeds are on the left bar.</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="25"> 
                     No feeds yet? Add one by clicking <Hyperlink Click="AddFeed">here!</Hyperlink>
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="25"> 
+                    You might also want to check out the <Hyperlink Click="OpenExamples">examples.</Hyperlink>
 
                 </TextBlock>
 
@@ -175,7 +178,7 @@
             <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed"/>
             <AppBarButton x:Name="deleteFeedButton" Visibility="Collapsed" Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed"/>
 
-            <AppBarButton Label="Examples" Click="SendFeedback">
+            <AppBarButton Label="Examples" Click="OpenExamples">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;"  />
                 </AppBarButton.Icon>
@@ -193,7 +196,7 @@
                 </AppBarButton.Icon>
             </AppBarButton>
 
-            <AppBarButton Label="About" Click="AboutSplash">
+            <AppBarButton Label="About" Click="OpenAbout">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;"  />
                 </AppBarButton.Icon>

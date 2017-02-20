@@ -334,4 +334,59 @@
   &lt;/visual&gt;
 &lt;/tile&gt;</value>
   </data>
+  <data name="Example3XML" xml:space="preserve">
+    <value>&lt;tile&gt;
+  &lt;visual displayName="Tile Display Name"&gt;
+
+    &lt;binding template="TileSmall"&gt;
+      &lt;image src="#favicon#" placement="background"/&gt;
+    &lt;/binding&gt;
+
+    &lt;binding template="TileMedium"&gt;
+      &lt;image src="#img1#" placement="peek"/&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="base" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+          
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileWide" branding="nameAndLogo"&gt;
+     &lt;image src="#img1#" placement="peek"/&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+          &lt;text hint-style="subtitle" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+        &lt;/subgroup&gt;
+      &lt;/group&gt;
+    &lt;/binding&gt;
+
+
+
+    &lt;binding template="TileLarge" branding="nameAndLogo"&gt;
+      &lt;group&gt;
+        &lt;subgroup&gt;
+           &lt;image src="#img1#"/&gt;
+        &lt;/subgroup&gt;
+         &lt;subgroup&gt;
+           &lt;text hint-style="caption" hint-wrap="true"&gt;&lt;title1&gt;&lt;/title1&gt;&lt;/text&gt;
+         &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+       &lt;group&gt;
+        &lt;subgroup&gt;
+           &lt;image src="#img2#"/&gt;
+        &lt;/subgroup&gt;
+         &lt;subgroup&gt;
+           &lt;text hint-style="caption" hint-wrap="true"&gt;&lt;title2&gt;&lt;/title2&gt;&lt;/text&gt;
+         &lt;/subgroup&gt;
+      &lt;/group&gt;
+
+    &lt;/binding&gt;
+
+  &lt;/visual&gt;
+&lt;/tile&gt;</value>
+  </data>
 </root>
