@@ -113,6 +113,9 @@
     <Compile Include="FeedDetailPage.xaml.cs">
       <DependentUpon>FeedDetailPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FeedReader.xaml.cs">
+      <DependentUpon>FeedReader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GlobalMainPageReference.cs" />
     <Compile Include="NewMainPage.xaml.cs">
       <DependentUpon>NewMainPage.xaml</DependentUpon>
@@ -224,6 +227,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="FeedDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FeedReader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

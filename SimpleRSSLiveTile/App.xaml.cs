@@ -7,8 +7,11 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -64,34 +67,34 @@ namespace SimpleRSSLiveTile
                 await storageFolder.CreateFileAsync("nicelog.txt", Windows.Storage.CreationCollisionOption.ReplaceExisting);
             await Windows.Storage.FileIO.WriteTextAsync(sampleFile, "launch argument: " + launchArgument);
 
+            Type pageType = typeof(NewMainPage);
+
             // Parameter is Feed ID
-            // If the ID exists, launch the RSS feed's first URL in a web browser and exit the app if it's not opened.
+            // If the ID exists, launch the RSS Reader view instead of the main app.
             if (feedSrc.FeedExists(launchArgument))
             {
+                pageType = typeof(FeedReader);
 
-                int id = int.Parse(launchArgument);
-                //Let's try different possible URLs. Default is the RSS feed's own URL, in a feed reader.
-                Uri navigationUri = new Uri("http://www.feedbucket.com/?src="+feedSrc.GetFeedById(id).GetURL());
+                //If the app is already open, spawn a new window with the reader.
+                if (rootFrame != null)
+                {
 
-                SyndicationFeed f = await feedSrc.GetFeedById(id).GetFeedDataAsync();
-                if (f.BaseUri != null)
-                    navigationUri = f.BaseUri;
+                    CoreApplicationView newView = CoreApplication.CreateNewView();
+                    int newViewId = 0;
+                    await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        Frame frame = new Frame();
+                        frame.Navigate(pageType, launchArgument);
+                        Window.Current.Content = frame;
+                        // You have to activate the window in order to show it later.
+                        Window.Current.Activate();
 
-                if (f.Items[0].ItemUri != null)
-                    navigationUri = f.Items[0].ItemUri;
+                        newViewId = ApplicationView.GetForCurrentView().Id;
+                    });
+                    bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+                }
 
-                if (f.Items[0].BaseUri != null)
-                    navigationUri = f.Items[0].BaseUri;
-
-                await Windows.System.Launcher.LaunchUriAsync(navigationUri);
-
-                if (rootFrame == null)
-                    Application.Current.Exit();
-
-                launchArgument = ""; //Nullify the argument since it makes the app crash otherwise.
             }
-
-
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -111,7 +114,7 @@ namespace SimpleRSSLiveTile
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(NewMainPage), launchArgument);
+                rootFrame.Navigate(pageType, launchArgument);
             }
             // Ensure the current window is active
             Window.Current.Activate();

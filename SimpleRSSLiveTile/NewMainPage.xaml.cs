@@ -33,6 +33,7 @@ namespace SimpleRSSLiveTile
         private StoreContext context = null;
         private string donationStoreID = "9nblggh50zp6";
 
+
         public NewMainPage()
         {
             this.InitializeComponent();
@@ -257,7 +258,7 @@ namespace SimpleRSSLiveTile
             if (AdaptiveStates.CurrentState == NarrowState)
             {
                 // Use "drill in" transition for navigating from master list to detail view
-                Frame.Navigate(typeof(ExamplePage), new DrillInNavigationTransitionInfo());
+                Frame.Navigate(typeof(ExamplePage), null, new DrillInNavigationTransitionInfo());
             }
             else
             {
@@ -276,7 +277,7 @@ namespace SimpleRSSLiveTile
             if (AdaptiveStates.CurrentState == NarrowState)
             {
                 // Use "drill in" transition for navigating from master list to detail view
-                Frame.Navigate(typeof(AboutPage), new DrillInNavigationTransitionInfo());
+                Frame.Navigate(typeof(AboutPage), null, new DrillInNavigationTransitionInfo());
             }
             else
             {

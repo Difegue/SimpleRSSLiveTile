@@ -119,6 +119,7 @@
                     <Button x:Name="inputButton" Content="Save Feed" Click="SaveFeed"/>
                     <Button x:Name="pinButton" Margin="10,0,0,0" Content="Pin to Start" Click="PinFeed" Visibility="Collapsed"/>
                     <Button x:Name="unpinButton" Margin="10,0,0,0" Content="Unpin from Start"  Click="UnpinFeed" Visibility="Collapsed"/>
+                    <Button x:Name="readButton" Margin="10,0,0,0" Content="Read Feed" Click="ReadFeed" Visibility="Collapsed"/>
                 </StackPanel>
 
                 <ProgressBar x:Name="Progress" Width="130" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="0,0,10,10" HorizontalAlignment="Left" Visibility="Collapsed" />

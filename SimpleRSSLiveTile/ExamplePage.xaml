@@ -10,7 +10,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -44,7 +44,7 @@
                     </TextBlock>
                     
                     <TextBlock Margin ="10" Style="{ThemeResource CaptionTextBlockStyle}"  HorizontalAlignment="Center" TextWrapping="Wrap">
-                    Using emojis and the #favicon# tag, displaying 1 to 3 questions.
+                    Using emojis and the #favicon# tag, displaying 1 to 3 questions. <LineBreak/>Try replacing the favicon tag with any image hosted on the Net!
                     </TextBlock>
                     
                     <Button x:Name="Button1" HorizontalAlignment="Center" Click="AddExample1">Add to my feeds</Button>
@@ -61,7 +61,7 @@
                     </TextBlock>
 
                     <TextBlock Margin ="10" Style="{ThemeResource CaptionTextBlockStyle}"  HorizontalAlignment="Center" TextWrapping="Wrap">
-                    Using the #img# tags to display the latest comics, cropped in circles.
+                    Using the #img# tags to display the latest comics, cropped in circles.<LineBreak/>Remove the hint-crop attribute for square images.
                     </TextBlock>
 
                     <Button x:Name="Button2" HorizontalAlignment="Center" Click="AddExample2">Add to my feeds</Button>
@@ -78,7 +78,7 @@
                     </TextBlock>
 
                     <TextBlock Margin ="10" Style="{ThemeResource CaptionTextBlockStyle}"  HorizontalAlignment="Center" TextWrapping="Wrap">
-                    Using the #img# tags with the peek attribute to display without hindering the text.
+                    Using the #img# tags with the peek attribute to display images without hindering the text.
                     </TextBlock>
 
                     <Button x:Name="Button3" HorizontalAlignment="Center" Click="AddExample3">Add to my feeds</Button>

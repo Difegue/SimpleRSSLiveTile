@@ -1,6 +1,7 @@
 ﻿using RSSDataTypes.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace SimpleRSSLiveTile.ViewModels
 {
+
     public class FeedViewModel: INotifyPropertyChanged
     {
         public int Id { get; set; }
@@ -19,6 +21,7 @@ namespace SimpleRSSLiveTile.ViewModels
         public string FaviconURL { get; set; }
         public string FaviconHiResImage { get; set; }
         public bool usingAtomIcon { get; set; }
+        public ObservableCollection<Article> Articles { get; set; }
 
         public FeedViewModel()
         {
@@ -39,6 +42,7 @@ namespace SimpleRSSLiveTile.ViewModels
             viewModel.TileXML = item.GetTileXML();
             viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.GetFeedDomain(); //Low effort
             viewModel.usingAtomIcon = item.IsUsingAtomIcon();
+            viewModel.Articles = new ObservableCollection<Article>();
 
             return viewModel;
 
@@ -54,4 +58,5 @@ namespace SimpleRSSLiveTile.ViewModels
         }
 
     }
+
 }

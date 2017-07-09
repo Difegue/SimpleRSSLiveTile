@@ -25,7 +25,7 @@
             
         </StackPanel>
 
-        <TextBlock Margin="20,10,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">👌🐔 Version 1.4 </TextBlock>
+        <TextBlock Margin="20,10,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">👌🐔 Version 1.5 </TextBlock>
 
         <TextBlock Margin="20,10,0,0" TextWrapping="Wrap"> Previously Simple RSS Live Tile. 
             <LineBreak/>I still use this for my bank. 

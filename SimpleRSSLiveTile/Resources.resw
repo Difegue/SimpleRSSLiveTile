@@ -180,36 +180,35 @@
   </data>
   <data name="ErrorTileXML" xml:space="preserve">
     <value>&lt;tile&gt;
-  &lt;visual displayName="RSS Live Tiles Error 👎🐔"&gt;
+  &lt;visual displayName="RSS Live Tiles Error"&gt;
 
     &lt;binding template="TileMedium"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="caption" hint-wrap="true"&gt;Couldn't get data from your RSS Feed. &lt;/text&gt;
+          &lt;text hint-style="title" hint-align="center"&gt;🐱💻&lt;/text&gt;
+          &lt;text hint-style="caption" hint-wrap="true"&gt;Couldn't load your RSS Feed.&lt;/text&gt;
           &lt;text hint-style="captionsubtle"  hint-wrap="true" &gt;Wrong URL ?&lt;/text&gt;
           
         &lt;/subgroup&gt;
       &lt;/group&gt;
     &lt;/binding&gt;
 
-
-
     &lt;binding template="TileWide" branding="nameAndLogo"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="subtitle" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
-          &lt;text hint-style="captionsubtle" hint-wrap="true" &gt;Wrong URL ?&lt;/text&gt;
+          &lt;text hint-style="subheader" hint-align="center"&gt;🐱💻&lt;/text&gt;
+          &lt;text hint-style="base" hint-wrap="true" &gt;Couldn't load your Feed.&lt;/text&gt;
         &lt;/subgroup&gt;
       &lt;/group&gt;
     &lt;/binding&gt;
 
-
-
     &lt;binding template="TileLarge" branding="nameAndLogo"&gt;
       &lt;group&gt;
         &lt;subgroup&gt;
-          &lt;text hint-style="base" hint-wrap="true"&gt;Couldn't get data from your RSS Feed.&lt;/text&gt;
-          &lt;text hint-style="captionsubtle"&gt;Wrong URL ?&lt;/text&gt;
+          &lt;text hint-style="header" hint-align="center"&gt;🐱💻&lt;/text&gt;
+          &lt;text hint-style="title" hint-wrap="true" hint-align="center"&gt;Couldn't load your RSS Feed.&lt;/text&gt;
+          &lt;text/&gt;
+          &lt;text hint-style="base" hint-wrap="true" hint-align="center"&gt;Open the app to fix it.&lt;/text&gt;
         &lt;/subgroup&gt;
       &lt;/group&gt;
 

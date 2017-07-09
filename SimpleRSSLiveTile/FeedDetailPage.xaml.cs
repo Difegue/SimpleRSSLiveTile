@@ -21,6 +21,8 @@ using System.Xml;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Popups;
+using Windows.ApplicationModel.Core;
+using Windows.UI.ViewManagement;
 
 namespace SimpleRSSLiveTile
 {
@@ -123,6 +125,7 @@ namespace SimpleRSSLiveTile
        
                 Progress.Visibility = Visibility.Collapsed;
                 outputStackPanel.Visibility = Visibility.Visible;
+                readButton.Visibility = Visibility.Visible;
 
                 //Update list in main page
                 GlobalMainPageReference.mainPage.UpdateFeedList();
@@ -344,9 +347,15 @@ namespace SimpleRSSLiveTile
 
                 //Check if feed is pinned and set visibility of buttons in consequence
                 if (feedDB.GetFeedById(Feed.Id).IsTilePinned())
+                {
+                    readButton.Visibility = Visibility.Visible;
                     unpinButton.Visibility = Visibility.Visible;
+                }
                 else if (feedDB.GetFeedById(Feed.Id).IsTileValid())
+                {
                     pinButton.Visibility = Visibility.Visible;
+                    readButton.Visibility = Visibility.Visible;
+                }
 
                 if (!ShouldGoToWideState())
                 {
@@ -458,5 +467,23 @@ namespace SimpleRSSLiveTile
 
         }
 
+        private async void ReadFeed(object sender, RoutedEventArgs e)
+        {
+            Feed f = await BuildFeedFromPage();
+
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                frame.Navigate(typeof(FeedReader), f.GetId().ToString());
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+        }
     }
 }
