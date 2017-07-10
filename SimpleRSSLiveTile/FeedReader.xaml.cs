@@ -30,6 +30,7 @@ namespace SimpleRSSLiveTile
     /// </summary>
     public class Article
     {
+        private Uri goodUri;
 
         public string Title { get; set; }
         public Uri URL { get; set; }
@@ -44,13 +45,17 @@ namespace SimpleRSSLiveTile
             PublishedDate = new DateTimeOffset(DateTime.Now);
         }
 
-        public Article(string title, string summary, DateTimeOffset publishedDate, Uri baseUri)
+        public Article(ISyndicationText title, ISyndicationText summary, DateTimeOffset publishedDate, Uri baseUri)
         {
-            Title = title;
-            Summary = summary;
+            if (title != null)
+                Title = title.Text;
+            if (summary != null)
+                Summary = summary.Text;
+
             PublishedDate = publishedDate;
             URL = baseUri;
         }
+
     }
 
     /// <summary>
@@ -125,14 +130,24 @@ namespace SimpleRSSLiveTile
                 if (goodUri == null)
                     goodUri = item.ItemUri;
 
-                Article a = new Article(item.Title.Text, item.Summary.Text, item.PublishedDate, goodUri);
+                if (goodUri == null)
+                    goodUri = new Uri(f.GetURL());
+
+                Article a = new Article(item.Title, item.Summary, item.PublishedDate, goodUri);
  
                 //Strip all XML/HTML tags.
                 HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(a.Title);
-                a.Title = doc.DocumentNode.InnerText;
-                doc.LoadHtml(a.Summary);
-                a.Summary = doc.DocumentNode.InnerText;
+                if (a.Title != null)
+                {
+                    doc.LoadHtml(a.Title);
+                    a.Title = doc.DocumentNode.InnerText;
+                }
+
+                if (a.Summary != null)
+                {
+                    doc.LoadHtml(a.Summary);
+                    a.Summary = doc.DocumentNode.InnerText;
+                }
 
                 Feed.Articles.Add(a);
             }

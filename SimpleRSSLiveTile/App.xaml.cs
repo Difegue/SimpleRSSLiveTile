@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Syndication;
+using Microsoft.Services.Store.Engagement;
 
 namespace SimpleRSSLiveTile
 {
@@ -37,6 +38,7 @@ namespace SimpleRSSLiveTile
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
+
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
@@ -57,6 +59,10 @@ namespace SimpleRSSLiveTile
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            //Push Notification configuration
+            StoreServicesEngagementManager engagementManager = StoreServicesEngagementManager.GetDefault();
+            await engagementManager.RegisterNotificationChannelAsync();
+
             string launchArgument = e.Arguments;
             Frame rootFrame = Window.Current.Content as Frame;
             FeedDataSource feedSrc = new FeedDataSource();
