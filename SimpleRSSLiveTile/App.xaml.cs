@@ -59,19 +59,10 @@ namespace SimpleRSSLiveTile
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            //Push Notification configuration
-            StoreServicesEngagementManager engagementManager = StoreServicesEngagementManager.GetDefault();
-            await engagementManager.RegisterNotificationChannelAsync();
 
             string launchArgument = e.Arguments;
             Frame rootFrame = Window.Current.Content as Frame;
             FeedDataSource feedSrc = new FeedDataSource();
-
-            Windows.Storage.StorageFolder storageFolder =
-                     Windows.Storage.ApplicationData.Current.LocalFolder;
-            Windows.Storage.StorageFile sampleFile =
-                await storageFolder.CreateFileAsync("nicelog.txt", Windows.Storage.CreationCollisionOption.ReplaceExisting);
-            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, "launch argument: " + launchArgument);
 
             Type pageType = typeof(NewMainPage);
 

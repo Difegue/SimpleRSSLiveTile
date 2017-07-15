@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -119,19 +120,8 @@ namespace SimpleRSSLiveTile
             // Grab feed items and add them to the tiles.
             foreach (var item in feedData.Items)
             {
-                Uri goodUri = item.BaseUri;
-
-                if (goodUri == null)
-                    goodUri = item.CommentsUri;
-
-                if (goodUri == null)
-                    goodUri = item.EditUri;
-
-                if (goodUri == null)
-                    goodUri = item.ItemUri;
-
-                if (goodUri == null)
-                    goodUri = new Uri(f.GetURL());
+                //Try getting a valid URL for the item.
+                Uri goodUri = item.ItemUri ?? item.Links.Select(l => l.Uri).FirstOrDefault();
 
                 Article a = new Article(item.Title, item.Summary, item.PublishedDate, goodUri);
  

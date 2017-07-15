@@ -1,4 +1,5 @@
 ﻿using BackgroundTasks;
+using Microsoft.Services.Store.Engagement;
 using RSSDataTypes.Data;
 using SimpleRSSLiveTile.ViewModels;
 using System;
@@ -73,9 +74,13 @@ namespace SimpleRSSLiveTile
             //Register background task
             BackgroundTaskHandler.RegisterBackgroundTask();
 
+            //Push Notification configuration
+            StoreServicesEngagementManager engagementManager = StoreServicesEngagementManager.GetDefault();
+            engagementManager.RegisterNotificationChannelAsync();
+
             FeedList = new ObservableCollection<FeedViewModel>();
             FeedDataSource feedSrc = new FeedDataSource();
-            
+
             foreach (var Feed in feedSrc.GetAllFeeds())
             {
                 FeedViewModel viewModel = FeedViewModel.FromFeed(Feed);

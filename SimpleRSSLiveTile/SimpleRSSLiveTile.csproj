@@ -195,12 +195,8 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
-    <Content Include="Assets\Untitled.scale-100.png" />
-    <Content Include="Assets\Untitled.scale-200.png" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Assets\Untitled.scale-400.png" />
-    <Content Include="Assets\vectorlog.svg" />
-    <Content Include="Assets\vectorlog_small.svg" />
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
