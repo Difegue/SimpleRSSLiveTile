@@ -316,29 +316,13 @@ namespace RSSDataTypes.Data
             //If it doesn't, we look at the favicons for its domain.
             try
             {
-                HttpResponseMessage response = await client.GetAsync(new Uri("https://icons.better-idea.org/allicons.json?url=" + GetFeedDomain() + "&formats=png"));
-                var jsonString = await response.Content.ReadAsStringAsync();
-
-                JsonArray icons = JsonValue.Parse(jsonString).GetObject().GetNamedArray("icons");
-                
-                double largestWidth = 0;
-                string urlLargestIcon = "http://www.google.com/s2/favicons?domain_url=" + GetFeedDomain(); //Fallback in case there are no png icons available
-
-                //Iterate on the icons array to get the image with the highest resolution
-                foreach (JsonValue icon in icons)
-                {
-                    JsonObject obj = icon.GetObject();
-                    if (obj.GetNamedNumber("width") > largestWidth)
-                    {
-                        largestWidth = obj.GetNamedNumber("width");
-                        urlLargestIcon = obj.GetNamedString("url");
-                    }
-                }
-
-                return urlLargestIcon;
+                //Use the statvoo API for higher res favicons -- but check if it's alive first
+                HttpResponseMessage response = await client.GetAsync(new Uri("https://api.statvoo.com/favicon/?url=" + GetFeedDomain()));
+                return "https://api.statvoo.com/favicon/?url=" + GetFeedDomain();
             }
             catch (Exception)
             {
+                //Google S2 is a great fallback but only offers 16x16 images.
                 return "http://www.google.com/s2/favicons?domain_url=" + GetFeedDomain();
             }
 

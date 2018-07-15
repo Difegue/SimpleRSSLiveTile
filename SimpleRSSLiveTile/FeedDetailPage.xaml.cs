@@ -108,7 +108,9 @@ namespace SimpleRSSLiveTile
                 //Update feed Title and favicon
                 feedTitle.Text = f.GetTitle();
                 String faviconURL = await f.getHiResFaviconAsync();
-                feedHQFavicon.Source = new BitmapImage(new Uri(faviconURL, UriKind.Absolute));
+                var bitmapImage = new BitmapImage();
+                feedHQFavicon.Source = bitmapImage;
+                bitmapImage.UriSource = new Uri(faviconURL, UriKind.Absolute);
 
                 //Maybe we're saving a tile already pinned, in which case we'll just update it
                 if (feedDB.GetFeedById(f.GetId()).IsTilePinned()) 
@@ -235,12 +237,13 @@ namespace SimpleRSSLiveTile
             base.OnNavigatedTo(e);
 
             // Parameter is feed ID
-            Feed = FeedViewModel.FromFeed(feedDB.GetFeedById((int)e.Parameter));
+            FeedViewModel viewModel = (FeedViewModel)e.Parameter;
+            Feed = FeedViewModel.FromFeed(feedDB.GetFeedById(viewModel.Id));
 
             var backStack = Frame.BackStack;
             var backStackCount = backStack.Count;
 
-            if (backStackCount > 0)
+            /*if (backStackCount > 0)
             {
                 var masterPageEntry = backStack[backStackCount - 1];
                 backStack.RemoveAt(backStackCount - 1);
@@ -259,7 +262,7 @@ namespace SimpleRSSLiveTile
             SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
             systemNavigationManager.BackRequested += DetailPage_BackRequested;
             if (!ShouldGoToWideState())
-                systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+                systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;*/
 
         }
 
@@ -267,113 +270,69 @@ namespace SimpleRSSLiveTile
         {
             base.OnNavigatedFrom(e);
 
-            SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
+           /* SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
             systemNavigationManager.BackRequested -= DetailPage_BackRequested;
-            systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;*/
         }
 
-        private void OnBackRequested()
-        {
-            // Page above us will be our master view.
-            // Make sure we are using the "drill out" animation in this transition.
-            if (Frame !=null && Frame.BackStackDepth > 0)
-                Frame.GoBack(new DrillInNavigationTransitionInfo());
-        }
-
-        void NavigateBackForWideState(bool useTransition)
-        {
-            // Evict this page from the cache as we may not need it again.
-            NavigationCacheMode = NavigationCacheMode.Disabled;
-
-            if (Frame != null && Frame.BackStackDepth > 0)
-                if (useTransition)
-                {
-                    Frame.GoBack(new EntranceNavigationTransitionInfo());
-                }
-                else
-                {
-                    Frame.GoBack(new SuppressNavigationTransitionInfo());
-                }
-
-        }
-
-        private bool ShouldGoToWideState()
-        {
-            return Window.Current.Bounds.Width >= 720;
-        }
 
         private async void PageRoot_Loaded(object sender, RoutedEventArgs e)
         {
-            if (ShouldGoToWideState() && Frame.BackStackDepth > 0)
-            {
-                // We shouldn't see this page since we are in "wide master-detail" mode. 
-                //However, if it has been loaded as an embedded frame (no backstack), we'll proceed as usual.
+            // Realize the main page content.
+            FindName("RootPanel");
+            RootPanel.Visibility = Visibility.Collapsed;
 
-                // Play a transition as we are navigating from a separate page.
-                NavigateBackForWideState(useTransition: true);
+            //Update the viewmodel based on the new data in the database, and refresh the UI elements
+            Feed = FeedViewModel.FromFeed(feedDB.GetFeedById(Feed.Id));
+
+            feedTitle.Text = Feed.Title;
+            feedInput.Text = Feed.URL;
+
+            String hiResFavicon = await feedDB.GetFeedById(Feed.Id).getHiResFaviconAsync();
+            feedHQFavicon.Source = new BitmapImage(new Uri(hiResFavicon, UriKind.Absolute));
+
+            atomIconToggle.IsOn = Feed.usingAtomIcon;
+            ResourceLoader rl = new ResourceLoader();
+            if (Feed.TileXML != rl.GetString("AdaptiveTemplate"))
+            {
+                customTileToggle.IsOn = true;
+                customTileXMLContent.Text = Feed.TileXML;
+                customTileXML.Visibility = Visibility.Visible;
             }
             else
             {
-                // Realize the main page content.
-                FindName("RootPanel");
-                RootPanel.Visibility = Visibility.Collapsed;
-
-                //Update the viewmodel based on the new data in the database, and refresh the UI elements
-                Feed = FeedViewModel.FromFeed(feedDB.GetFeedById(Feed.Id));
-
-                feedTitle.Text = Feed.Title;
-                feedInput.Text = Feed.URL;
-
-                String hiResFavicon = await feedDB.GetFeedById(Feed.Id).getHiResFaviconAsync();
-                feedHQFavicon.Source = new BitmapImage(new Uri(hiResFavicon, UriKind.Absolute));
-
-                atomIconToggle.IsOn = Feed.usingAtomIcon;
-                ResourceLoader rl = new ResourceLoader();
-                if (Feed.TileXML != rl.GetString("AdaptiveTemplate"))
-                {
-                    customTileToggle.IsOn = true;
-                    customTileXMLContent.Text = Feed.TileXML;
-                    customTileXML.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    customTileToggle.IsOn = false;
-                    customTileXML.Visibility = Visibility.Collapsed;
-                }
-
-                pinButton.Visibility = Visibility.Collapsed;
-                unpinButton.Visibility = Visibility.Collapsed;
-                outputStackPanel.Visibility = Visibility.Collapsed;
-
-                //Check if feed is pinned and set visibility of buttons in consequence
-                if (feedDB.GetFeedById(Feed.Id).IsTilePinned())
-                {
-                    readButton.Visibility = Visibility.Visible;
-                    unpinButton.Visibility = Visibility.Visible;
-                }
-                else if (feedDB.GetFeedById(Feed.Id).IsTileValid())
-                {
-                    pinButton.Visibility = Visibility.Visible;
-                    readButton.Visibility = Visibility.Visible;
-                }
-
-                if (!ShouldGoToWideState())
-                {
-                    deleteFeedCommandBar.Visibility = Visibility.Visible;
-                }
-
-                FeedWaiting.Visibility = Visibility.Collapsed;
-                //We rebuilt the UI, now fade it in
-                RootPanel.Opacity = 0.0;
-                RootPanel.Visibility = Visibility.Visible;
-
-                AnimateDouble(RootPanel, "Opacity", 1.0, 200, () =>
-                {
-                    RootPanel.Visibility = Visibility.Visible;
-                });
-
-                Window.Current.SizeChanged += Window_SizeChanged;
+                customTileToggle.IsOn = false;
+                customTileXML.Visibility = Visibility.Collapsed;
             }
+
+            pinButton.Visibility = Visibility.Collapsed;
+            unpinButton.Visibility = Visibility.Collapsed;
+            outputStackPanel.Visibility = Visibility.Collapsed;
+
+            //Check if feed is pinned and set visibility of buttons in consequence
+            if (feedDB.GetFeedById(Feed.Id).IsTilePinned())
+            {
+                readButton.Visibility = Visibility.Visible;
+                unpinButton.Visibility = Visibility.Visible;
+            }
+            else if (feedDB.GetFeedById(Feed.Id).IsTileValid())
+            {
+                pinButton.Visibility = Visibility.Visible;
+                readButton.Visibility = Visibility.Visible;
+            }
+
+                
+
+            FeedWaiting.Visibility = Visibility.Collapsed;
+            //We rebuilt the UI, now fade it in
+            RootPanel.Opacity = 0.0;
+            RootPanel.Visibility = Visibility.Visible;
+
+            AnimateDouble(RootPanel, "Opacity", 1.0, 200, () =>
+            {
+                RootPanel.Visibility = Visibility.Visible;
+            });
+
         }
 
         public static void AnimateDouble(DependencyObject target, string path, double to, double duration, Action onCompleted = null)
@@ -400,32 +359,7 @@ namespace SimpleRSSLiveTile
 
             sb.Begin();
         }
-
-        private void PageRoot_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Window.Current.SizeChanged -= Window_SizeChanged;
-        }
-
-        private void Window_SizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
-        {
-            if (ShouldGoToWideState())
-            {
-                // Make sure we are no longer listening to window change events.
-                Window.Current.SizeChanged -= Window_SizeChanged;
-
-                // We shouldn't see this page since we are in "wide master-detail" mode.
-                NavigateBackForWideState(useTransition: false);
-            }
-        }
-
-        private void DetailPage_BackRequested(object sender, BackRequestedEventArgs e)
-        {
-            // Mark event as handled so we don't get bounced out of the app.
-            e.Handled = true;
-
-            OnBackRequested();
-        }
-
+        
         private async void DeleteFeed(object sender, RoutedEventArgs e)
         {
 
@@ -444,8 +378,6 @@ namespace SimpleRSSLiveTile
                 FeedDataSource feedSrc = new FeedDataSource();
                 feedSrc.GetFeedById(Feed.Id).UnpinTileAsync();
                 feedSrc.DeleteFeed(Feed.Id);
-
-                NavigateBackForWideState(useTransition: false);
             }
         }
 

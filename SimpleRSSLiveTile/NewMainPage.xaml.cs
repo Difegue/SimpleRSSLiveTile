@@ -5,16 +5,20 @@ using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Services.Store;
 using Windows.Storage;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,14 +30,30 @@ using Windows.UI.Xaml.Navigation;
 
 namespace SimpleRSSLiveTile
 {
+
+    //ViewModel for the NavView Header, which also contains the custom Titlebar.
+    public class CustomTitleBar
+    {
+        public SolidColorBrush TitleBarBackground { get; set; }
+        public SolidColorBrush TitleBarForeground { get; set; }
+
+        public CustomTitleBar()
+        {
+            TitleBarBackground = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
+            TitleBarForeground = new SolidColorBrush((Color)Application.Current.Resources["SystemAltHighColor"]);
+        }
+    }
+
     public sealed partial class NewMainPage : Page
     {
+
         private FeedViewModel _lastSelectedFeed;
         private ObservableCollection<FeedViewModel> FeedList;
 
         private StoreContext context = null;
         private string donationStoreID = "9nblggh50zp6";
 
+        private CustomTitleBar titleBar = new CustomTitleBar();
 
         public NewMainPage()
         {
@@ -62,7 +82,7 @@ namespace SimpleRSSLiveTile
 
         private void AcknowledgeDonation()
         {
-            donateButton.Label = "Arigato !";
+            donateButton.Content = "Arigato !";
             donateButton.Icon.Foreground = new SolidColorBrush(Colors.DarkGoldenrod);
             donateButton.IsEnabled = false;
         }
@@ -95,15 +115,78 @@ namespace SimpleRSSLiveTile
                     FeedList.Where((Feed) => Feed.Id == id).FirstOrDefault();
             }
 
-            MasterListView.ItemsSource = FeedList;
-            UpdateForVisualState(AdaptiveStates.CurrentState);
-
             //Look if user has add-on purchases registered.
             initializeIAP();
 
             //Update reference to mainPage in GlobalReference
             GlobalMainPageReference.mainPage = this;
+
+            Window.Current.Activated += UpdateTitleBar;
+            //Set our custom titleBar as the header so colors propagate properly.
+            NavView.Header = titleBar;
+
+            ApplicationViewTitleBar systemTitleBar = ApplicationView.GetForCurrentView().TitleBar;
+            systemTitleBar.ButtonInactiveBackgroundColor = (Color)Application.Current.Resources["SystemAltMediumColor"];
         }
+
+        private void UpdateTitleBar(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        {
+
+            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            {
+                titleBar.TitleBarBackground.Color = (Color)Application.Current.Resources["SystemAltMediumColor"];
+                titleBar.TitleBarForeground.Color = Color.FromArgb(255, 153, 153, 153);
+            } else
+            {
+                titleBar.TitleBarBackground.Color = (Color)Application.Current.Resources["SystemAccentColor"];
+                titleBar.TitleBarForeground.Color = (Color)Application.Current.Resources["SystemAltHighColor"];
+            }
+           
+        }
+
+        private void NavView_Loaded(object sender, RoutedEventArgs e)
+        {
+            // NavView doesn't load any page by default: you need to specify it
+            ContentFrame.Navigate(typeof(WelcomePage));
+        }
+
+        private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            // Getting the Feed from Content (args.InvokedItem is the content of NavigationViewItem)
+            var clickedFeed = (FeedViewModel)args.InvokedItem;
+            _lastSelectedFeed = clickedFeed;
+
+            //Navigate to another page quickly so we can re-navigate to FeedDetail if we're already on it
+            ContentFrame.Navigate(typeof(WelcomePage));
+            ContentFrame.Navigate(typeof(FeedDetailPage), clickedFeed);
+        }
+
+        private void NavView_BackRequested(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            On_BackRequested();
+        }
+
+        private void BackInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            On_BackRequested();
+            args.Handled = true;
+        }
+
+        private bool On_BackRequested()
+        {
+            if (!ContentFrame.CanGoBack)
+                return false;
+
+            // Don't go back if the nav pane is overlayed
+            if (NavView.IsPaneOpen &&
+                (NavView.DisplayMode == NavigationViewDisplayMode.Compact ||
+                NavView.DisplayMode == NavigationViewDisplayMode.Minimal))
+                return false;
+
+            ContentFrame.GoBack();
+            return true;
+        }
+
 
         public void UpdateFeedList()
         {
@@ -113,30 +196,6 @@ namespace SimpleRSSLiveTile
             {
                 FeedViewModel viewModel = FeedViewModel.FromFeed(Feed);
                 FeedList.Add(viewModel);
-            }
-        }
-
-        private void MasterListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            var clickedFeed = (FeedViewModel)e.ClickedItem;
-            _lastSelectedFeed = clickedFeed;
-
-            if (AdaptiveStates.CurrentState == NarrowState)
-            {
-                // Use "drill in" transition for navigating from master list to detail view
-                Frame.Navigate(typeof(FeedDetailPage), clickedFeed.Id, new DrillInNavigationTransitionInfo());
-            }
-            else
-            {
-                deleteFeedButton.Visibility = Visibility.Visible;
-                // Play a refresh animation when the user switches detail Feeds.
-                //EnableContentTransitions();
-                contentFrame.Children.Clear();
-                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
-                Frame f = new Frame();
-                f.Navigate(typeof(FeedDetailPage), clickedFeed.Id);
-                contentFrame.Children.Add(f);
-               
             }
         }
 
@@ -157,14 +216,17 @@ namespace SimpleRSSLiveTile
 
                 if ((int)result.Id == 0)
                 {
-                    deleteFeedButton.Visibility = Visibility.Collapsed;
+                    //deleteFeedButton.Visibility = Visibility.Collapsed;
                     FeedDataSource feedSrc = new FeedDataSource();
                     feedSrc.GetFeedById(_lastSelectedFeed.Id).UnpinTileAsync();
                     feedSrc.DeleteFeed(_lastSelectedFeed.Id);          
                     UpdateFeedList();
                     _lastSelectedFeed = null;
-                    contentFrame.Children.Clear();
+                    ContentFrame.Navigate(typeof(WelcomePage));
                 }
+            } else
+            {
+                await new MessageDialog("Please select a Feed to delete first.", "No Feed to delete!").ShowAsync();
             }
         }
 
@@ -210,33 +272,6 @@ namespace SimpleRSSLiveTile
 
         }
 
-        private void AdaptiveStates_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
-        {
-            UpdateForVisualState(e.NewState, e.OldState);
-        }
-
-        private void UpdateForVisualState(VisualState newState, VisualState oldState = null)
-        {
-            var isNarrow = newState == NarrowState;
-
-            if (isNarrow && oldState == DefaultState && _lastSelectedFeed != null)
-            {
-                // Resize down to the detail Feed. Don't play a transition.
-                contentFrame.Children.Clear();
-                Frame.Navigate(typeof(FeedDetailPage), _lastSelectedFeed.Id, new SuppressNavigationTransitionInfo());
-            }
-
-            EntranceNavigationTransitionInfo.SetIsTargetElement(MasterListView, isNarrow);
-
-        }
-
-
-        private void LayoutRoot_Loaded(object sender, RoutedEventArgs e)
-        {
-            // Assure we are displaying the correct Feed. This is necessary in certain adaptive cases.
-            MasterListView.SelectedItem = _lastSelectedFeed;
-        }
-
         private async void SendFeedback(object sender, RoutedEventArgs e)
         {
             var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
@@ -260,40 +295,13 @@ namespace SimpleRSSLiveTile
 
         private void OpenExamples(object sender, RoutedEventArgs e)
         {
-            if (AdaptiveStates.CurrentState == NarrowState)
-            {
-                // Use "drill in" transition for navigating from master list to detail view
-                Frame.Navigate(typeof(ExamplePage), null, new DrillInNavigationTransitionInfo());
-            }
-            else
-            {
-                deleteFeedButton.Visibility = Visibility.Collapsed;
-                contentFrame.Children.Clear();
-                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
-                Frame f = new Frame();
-                f.Navigate(typeof(ExamplePage));
-                contentFrame.Children.Add(f);
-
-            }
+            ContentFrame.Navigate(typeof(ExamplePage));
         }
 
         private void OpenAbout(object sender, RoutedEventArgs e)
-        {
-            if (AdaptiveStates.CurrentState == NarrowState)
-            {
-                // Use "drill in" transition for navigating from master list to detail view
-                Frame.Navigate(typeof(AboutPage), null, new DrillInNavigationTransitionInfo());
-            }
-            else
-            {
-                deleteFeedButton.Visibility = Visibility.Collapsed;
-                contentFrame.Children.Clear();
-                contentFrame.VerticalAlignment = VerticalAlignment.Stretch;
-                Frame f = new Frame();
-                f.Navigate(typeof(AboutPage));
-                contentFrame.Children.Add(f);
-
-            }
+        { 
+            ContentFrame.Navigate(typeof(AboutPage));
         }
+
     }
 }

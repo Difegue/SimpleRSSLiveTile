@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="100"/>
@@ -24,7 +24,7 @@
 
             <TextBlock
             Text="Examples"
-            Margin="20,5,0,0" 
+            Margin="20,0,0,0" 
             FontSize="30"
             Style="{ThemeResource TitleTextBlockStyle}"/>
             
@@ -33,7 +33,7 @@
         
         <TextBlock Grid.Row="1" Margin="20" TextWrapping="Wrap"> Need some inspiration for shaping your feeds into Live Tiles? <LineBreak/>These few pinnable examples can show you how to use the Tile XML to its full potential.</TextBlock>
 
-        <GridView Grid.Row="2">
+        <GridView Grid.Row="2" SelectionMode="None">
             <GridViewItem>
                 <StackPanel>
                     <TextBlock Margin="20,10,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">Example 1 :</TextBlock>

@@ -7,38 +7,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    NavigationCacheMode="Enabled"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Page.Transitions>
-        <TransitionCollection>
-            <NavigationThemeTransition />
-        </TransitionCollection>
-    </Page.Transitions>
+    NavigationCacheMode="Enabled">
 
     <Page.Resources>
-        <DataTemplate x:Key="MasterListViewItemTemplate" x:DataType="viewmodels:FeedViewModel">
-            <Grid Margin="0,11,0,13">
+        <DataTemplate x:Key="NavigationMenuItemDataTemplate" x:DataType="viewmodels:FeedViewModel">
+            <Grid Margin="0,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="{x:Bind Title}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Column="1" Text="{x:Bind Title}" Style="{ThemeResource BaseTextBlockStyle}" MaxLines="1"/>
 
                 <TextBlock
                     Text="{x:Bind URL}"
-                    Grid.Row="1"
+                     Grid.Column="1" 
+                     Grid.Row="1" 
                     MaxLines="1"
+                    Style="{ThemeResource CaptionTextBlockStyle}"
                    />
 
-                <Image Grid.Column="1"
-                    Margin="12,1,0,0"
-                     >
+                <Image Margin="0,0,20,0" Grid.RowSpan="2" VerticalAlignment="Center">
                     <Image.Source>
                         <BitmapImage x:Name="feedFavicon"
                          UriSource="{x:Bind FaviconURL}"/>
@@ -47,164 +41,86 @@
 
             </Grid>
         </DataTemplate>
-
-        <DataTemplate x:Key="DetailContentTemplate" x:DataType="viewmodels:FeedViewModel">
-            <StackPanel>
-                <TextBlock
-                    Margin="0,8"
-                    Style="{ThemeResource TitleTextBlockStyle}"
-                    HorizontalAlignment="Left"
-                    Text="{x:Bind Title}"/>
-
-                <TextBlock
-                    Margin="0,9"
-                    HorizontalAlignment="Left"
-                    MaxWidth="560"
-                    Style="{ThemeResource BodyTextBlockStyle}"
-                    Text="{x:Bind URL}" />
-            </StackPanel>
-        </DataTemplate>
     </Page.Resources>
 
-    <Grid x:Name="LayoutRoot" Loaded="LayoutRoot_Loaded" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="AdaptiveStates" CurrentStateChanged="AdaptiveStates_CurrentStateChanged">
-                <VisualState x:Name="DefaultState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="720" />
-                    </VisualState.StateTriggers>
-                </VisualState>
+    <NavigationView x:Name="NavView"
+                    ItemInvoked="NavView_ItemInvoked"
+                    Loaded="NavView_Loaded"
+                    IsSettingsVisible="False"
+                    MenuItemsSource="{x:Bind FeedList}" 
+                    MenuItemTemplate="{StaticResource NavigationMenuItemDataTemplate}"
+                    Header="wow">
 
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
+        <NavigationView.HeaderTemplate>
+            <DataTemplate x:DataType="local:CustomTitleBar">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <VisualState.Setters>
-                        <Setter Target="MasterColumn.Width" Value="*" />
-                        <Setter Target="DetailColumn.Width" Value="0" />
-                        <Setter Target="MasterListView.SelectionMode" Value="None" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="33" />
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Background="{x:Bind TitleBarBackground}"  Grid.Row="0" Grid.ColumnSpan="2">
+                        <SymbolIcon Symbol="PostUpdate" VerticalAlignment="Center" Foreground="{x:Bind TitleBarForeground}" Margin="10,0,0,0"/>
+                        <TextBlock Text="RSS Live Tiles" VerticalAlignment="Center" Foreground="{x:Bind TitleBarForeground}" Margin="10,-1,0,0"/>
+                    </StackPanel>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="MasterColumn" Width="320" />
-            <ColumnDefinition x:Name="DetailColumn" Width="*" />
-        </Grid.ColumnDefinitions>
+                    <CommandBar Grid.Row="1" Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            DefaultLabelPosition="Right">
 
-        <StackPanel Orientation="Horizontal" Background="{ThemeResource SystemAccentColor}">
+                        <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+                        <AppBarButton Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
 
-            <SymbolIcon Symbol="PostUpdate" Foreground="{ThemeResource SystemColorHighlightTextColor}" Height="30" RenderTransformOrigin="0.5,0.5" Margin="20,8,0,0">
-                <SymbolIcon.RenderTransform>
-                    <CompositeTransform ScaleY="2" ScaleX="2"/>
-                </SymbolIcon.RenderTransform>
-            </SymbolIcon>
-            
-            <TextBlock
-            Text="Your RSS Feeds"
-            Margin="20,8,8,8"
-            Foreground="{ThemeResource SystemColorHighlightTextColor}"
-            Style="{ThemeResource TitleTextBlockStyle}" />
-        </StackPanel>
+                    </CommandBar>
+                </Grid>
+            </DataTemplate>
+        </NavigationView.HeaderTemplate>
         
-        <ListView
-            x:Name="MasterListView"
-            Grid.Row="1"
-            ItemContainerTransitions="{x:Null}"
-            ItemTemplate="{StaticResource MasterListViewItemTemplate}"
-            IsItemClickEnabled="True"
-            ItemClick="MasterListView_ItemClick"
-            BorderThickness="0,0,1,0"
-            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
+        <Frame x:Name="ContentFrame">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition/>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
 
-        <ScrollViewer
-            Grid.Column="1"
-            Grid.RowSpan="2"
-            Margin="5,0,0,0">
+        <NavigationView.PaneFooter>
+            <StackPanel Orientation="Vertical">
 
-            <StackPanel x:Name="contentFrame" VerticalAlignment="Center" >
+                <NavigationViewItem Content="Examples" PointerReleased="OpenExamples" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;"  />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
 
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECA5;" Margin="-5,0,0,0" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemAccentColor}" >
-                    <FontIcon.RenderTransform>
-                        <CompositeTransform ScaleX="4" ScaleY="4"/>
-                    </FontIcon.RenderTransform>
-                </FontIcon>
-                <TextBlock HorizontalAlignment="Center" Margin="0,30,0,0" FontSize="30" Foreground="{ThemeResource SystemAccentColor}">Welcome !</TextBlock>
-                <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="25">
-                     Your feeds are on the left bar.</TextBlock>
-                <TextBlock HorizontalAlignment="Center" FontSize="25"> 
-                    No feeds yet? Add one by clicking <Hyperlink Click="AddFeed">here!</Hyperlink>
-                </TextBlock>
-                <TextBlock HorizontalAlignment="Center" FontSize="25"> 
-                    You might also want to check out the <Hyperlink Click="OpenExamples">examples.</Hyperlink>
+                <NavigationViewItem Content="Feedback" PointerReleased="SendFeedback" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;"  />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
 
-                </TextBlock>
+                <NavigationViewItem x:Name="donateButton" Content="Donate" PointerReleased="OpenDonate" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC09;"  />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="About" PointerReleased="OpenAbout" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;"  />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
 
             </StackPanel>
-        </ScrollViewer>
+        </NavigationView.PaneFooter>
 
-        <!--<ContentPresenter
-            x:Name="DetailContentPresenter"
-            Grid.Column="1"
-            Grid.RowSpan="2"
-            BorderThickness="1,0,0,0"
-            Padding="24,0"
-            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
-            Content="{x:Bind MasterListView.SelectedItem, Mode=OneWay}"
-            ContentTemplate="{StaticResource DetailContentTemplate}">
-            <ContentPresenter.ContentTransitions>
-                Empty by default. See MasterListView_ItemClick 
-                <TransitionCollection />
-            </ContentPresenter.ContentTransitions>
-        </ContentPresenter>-->
-    </Grid>
-
-    <Page.BottomAppBar>
-        <CommandBar Margin="0,0,0,0">
-
-            <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed"/>
-            <AppBarButton x:Name="deleteFeedButton" Visibility="Collapsed" Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed"/>
-
-            <AppBarButton Label="Examples" Click="OpenExamples">
-                <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;"  />
-                </AppBarButton.Icon>
-            </AppBarButton>
-            
-            <AppBarButton Label="Feedback" Click="SendFeedback">
-                <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;"  />
-                </AppBarButton.Icon>
-            </AppBarButton>
-            
-            <AppBarButton x:Name="donateButton" Label="Donate" Click="OpenDonate">
-                <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC09;"  />
-                </AppBarButton.Icon>
-            </AppBarButton>
-
-            <AppBarButton Label="About" Click="OpenAbout">
-                <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;"  />
-                </AppBarButton.Icon>
-            </AppBarButton>
-
-
-        </CommandBar>
-    </Page.BottomAppBar>
+    </NavigationView>
 
 </Page>
     

@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Syndication;
 using Microsoft.Services.Store.Engagement;
+using Windows.UI;
 
 namespace SimpleRSSLiveTile
 {
@@ -35,10 +36,6 @@ namespace SimpleRSSLiveTile
         /// </summary>
         public App()
         {
-            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session);
-
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
@@ -113,8 +110,15 @@ namespace SimpleRSSLiveTile
                 // parameter
                 rootFrame.Navigate(pageType, launchArgument);
             }
+
             // Ensure the current window is active
             Window.Current.Activate();
+
+            // Extend acrylic onto title bar.
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
+            titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
 
         }
 

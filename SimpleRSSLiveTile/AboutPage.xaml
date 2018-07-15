@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <ScrollViewer>
+        <StackPanel>
         
         <StackPanel Orientation="Horizontal" >
 
@@ -19,13 +20,13 @@
 
             <TextBlock
             Text="About RSS Live Tiles "
-            Margin="20,5,0,0" 
+            Margin="20,0,0,0" 
             FontSize="30"
             Style="{ThemeResource TitleTextBlockStyle}"/>
             
         </StackPanel>
 
-        <TextBlock Margin="20,10,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">👌🐔 Version 1.5 </TextBlock>
+        <TextBlock Margin="20,10,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">👌🐔 Version 2.0 </TextBlock>
 
         <TextBlock Margin="20,10,0,0" TextWrapping="Wrap"> Previously Simple RSS Live Tile. 
             <LineBreak/>I still use this for my bank. 
@@ -49,4 +50,5 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         </TextBlock>
 
     </StackPanel>
+    </ScrollViewer>
 </Page>

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -98,6 +99,13 @@ namespace SimpleRSSLiveTile
 
             FeedWaiting.Visibility = Visibility.Collapsed;
             RootPanel.Visibility = Visibility.Visible;
+
+            //Ensure the titlebar is consistent with the rest of the app 
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
 
 
         }

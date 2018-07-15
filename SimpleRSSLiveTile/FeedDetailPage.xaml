@@ -8,9 +8,7 @@
     mc:Ignorable="d"
     x:Name="PageRoot"
     NavigationCacheMode="Enabled"
-    Loaded="PageRoot_Loaded"
-    Unloaded="PageRoot_Unloaded"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Loaded="PageRoot_Loaded">
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition />
@@ -77,7 +75,7 @@
         </Flyout>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="20,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
@@ -95,10 +93,10 @@
         
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
             <!-- Don't realize our content by default. See PageRoot_Loaded. -->
-            <StackPanel x:Name="RootPanel" Margin="28,31,20,21" x:DeferLoadStrategy="Lazy" Visibility="Collapsed">
+            <StackPanel x:Name="RootPanel" x:DeferLoadStrategy="Lazy" Visibility="Collapsed">
 
                 <StackPanel Orientation="Horizontal">
-                    <Image x:Name="feedHQFavicon" Height="50" Margin="0,-30,0,0" Source="ms-appx:///Assets/Untitled.scale-200.png"/>
+                    <Image x:Name="feedHQFavicon" Height="50" Margin="0,-30,0,0" Source="ms-appx:///Assets/Untitled.scale-200.png" />
                     <TextBlock
                 Margin="20,0,0,40" 
                 FontSize="30"
