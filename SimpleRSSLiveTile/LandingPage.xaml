@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="SimpleRSSLiveTile.WelcomePage"
+    x:Class="SimpleRSSLiveTile.LandingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SimpleRSSLiveTile"
@@ -14,13 +14,13 @@
                 <CompositeTransform ScaleX="4" ScaleY="4"/>
             </FontIcon.RenderTransform>
         </FontIcon>
-        <TextBlock HorizontalAlignment="Center" Margin="0,30,0,0" FontSize="30" Foreground="{ThemeResource SystemAccentColor}">Welcome !</TextBlock>
-        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="25">
+        <TextBlock HorizontalAlignment="Center" Margin="0,30,0,0"  Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="Wrap" Foreground="{ThemeResource SystemAccentColor}">Welcome !</TextBlock>
+        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap">
                      Your feeds are on the left bar.</TextBlock>
-        <TextBlock HorizontalAlignment="Center" FontSize="25"> 
+        <TextBlock HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"> 
                     No feeds yet? Add one by clicking on the matching button up here!
         </TextBlock>
-        <TextBlock HorizontalAlignment="Center" FontSize="25"> 
+        <TextBlock HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"> 
                     You might also want to check out the examples.
 
         </TextBlock>

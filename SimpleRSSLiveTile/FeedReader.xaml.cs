@@ -89,6 +89,14 @@ namespace SimpleRSSLiveTile
 
         private async void PageRoot_Loaded(object sender, RoutedEventArgs e)
         {
+
+            //Ensure the titlebar is consistent with the rest of the app 
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
+
             // Realize the main page content.
             FindName("RootPanel");
             RootPanel.Visibility = Visibility.Collapsed;
@@ -99,14 +107,6 @@ namespace SimpleRSSLiveTile
 
             FeedWaiting.Visibility = Visibility.Collapsed;
             RootPanel.Visibility = Visibility.Visible;
-
-            //Ensure the titlebar is consistent with the rest of the app 
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
-
 
         }
 

@@ -377,6 +377,8 @@ namespace SimpleRSSLiveTile
 
         private async void ReadFeed(object sender, RoutedEventArgs e)
         {
+            Progress.Visibility = Visibility.Visible;
+
             Feed f = await BuildFeedFromPage();
 
             CoreApplicationView newView = CoreApplication.CreateNewView();
@@ -392,6 +394,8 @@ namespace SimpleRSSLiveTile
                 newViewId = ApplicationView.GetForCurrentView().Id;
             });
             bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+
+            Progress.Visibility = Visibility.Collapsed;
         }
     }
 }

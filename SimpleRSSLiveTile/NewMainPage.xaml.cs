@@ -148,7 +148,7 @@ namespace SimpleRSSLiveTile
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
             // NavView doesn't load any page by default: you need to specify it
-            ContentFrame.Navigate(typeof(WelcomePage));
+            ContentFrame.Navigate(typeof(LandingPage));
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -237,7 +237,7 @@ namespace SimpleRSSLiveTile
                     FeedList.Remove((FeedViewModel)NavView.SelectedItem);
 
                     _lastSelectedFeed = null;
-                    ContentFrame.Navigate(typeof(WelcomePage));
+                    ContentFrame.Navigate(typeof(LandingPage));
                 }
             } else
             {

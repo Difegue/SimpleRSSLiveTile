@@ -12,39 +12,20 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using RSSDataTypes.Data;
-using Windows.UI.Popups;
-using Windows.Foundation.Metadata;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Core;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace SimpleRSSLiveTile
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AboutPage : Page
+    public sealed partial class LandingPage : Page
     {
 
-        public AboutPage()
+        public LandingPage()
         {
             this.InitializeComponent();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
         }
 
     }
