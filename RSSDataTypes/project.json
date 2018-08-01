@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "HtmlAgilityPack": "1.8.4",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "6.1.5",
+    "HtmlAgilityPack": "1.8.5",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "6.1.7",
     "Newtonsoft.Json": "11.0.2"
   },
   "frameworks": {

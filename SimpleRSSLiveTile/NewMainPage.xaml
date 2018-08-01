@@ -48,8 +48,7 @@
                     Loaded="NavView_Loaded"
                     IsSettingsVisible="False"
                     MenuItemsSource="{x:Bind FeedList}" 
-                    MenuItemTemplate="{StaticResource NavigationMenuItemDataTemplate}"
-                    Header="wow">
+                    MenuItemTemplate="{StaticResource NavigationMenuItemDataTemplate}">
 
         <NavigationView.HeaderTemplate>
             <DataTemplate x:DataType="local:CustomTitleBar">

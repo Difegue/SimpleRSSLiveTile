@@ -187,18 +187,6 @@ namespace SimpleRSSLiveTile
             return true;
         }
 
-
-        public void UpdateFeedList()
-        {
-            FeedList.Clear();
-            FeedDataSource feedSrc = new FeedDataSource();
-            foreach (var Feed in feedSrc.GetAllFeeds())
-            {
-                FeedViewModel viewModel = FeedViewModel.FromFeed(Feed);
-                FeedList.Add(viewModel);
-            }
-        }
-
         private async void DeleteSelectedFeed(object sender, RoutedEventArgs e)
         {
             //Get Feed we want to delete
@@ -219,8 +207,9 @@ namespace SimpleRSSLiveTile
                     //deleteFeedButton.Visibility = Visibility.Collapsed;
                     FeedDataSource feedSrc = new FeedDataSource();
                     feedSrc.GetFeedById(_lastSelectedFeed.Id).UnpinTileAsync();
-                    feedSrc.DeleteFeed(_lastSelectedFeed.Id);          
-                    UpdateFeedList();
+                    feedSrc.DeleteFeed(_lastSelectedFeed.Id);
+                    FeedList.Remove((FeedViewModel)NavView.SelectedItem);
+
                     _lastSelectedFeed = null;
                     ContentFrame.Navigate(typeof(WelcomePage));
                 }

@@ -30,7 +30,6 @@
             <Task Type="general" />
             <Task Type="timer" />
             <Task Type="pushNotification" />
-            <Task Type="bluetooth" />
           </BackgroundTasks>
         </Extension>
       </Extensions>
