@@ -64,7 +64,13 @@ namespace RSSDataTypes.Data
         {
             String feedJSON = (String)feedDB.Values[id.ToString()];
 
-            return JsonConvert.DeserializeObject<Feed>(feedJSON);
+            if (feedJSON != null)
+            {
+                return JsonConvert.DeserializeObject<Feed>(feedJSON);
+            }
+
+            //high-level meta joke
+            return new Feed(id, "Something happened", "http://example.com");
         }
 
         public bool DeleteFeed(int id)

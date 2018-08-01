@@ -5,6 +5,7 @@ using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -48,7 +49,7 @@ namespace SimpleRSSLiveTile
     {
 
         private FeedViewModel _lastSelectedFeed;
-        private ObservableCollection<FeedViewModel> FeedList;
+        private TrulyObservableCollection<FeedViewModel> FeedList;
 
         private StoreContext context = null;
         private string donationStoreID = "9nblggh50zp6";
@@ -98,7 +99,7 @@ namespace SimpleRSSLiveTile
             StoreServicesEngagementManager engagementManager = StoreServicesEngagementManager.GetDefault();
             engagementManager.RegisterNotificationChannelAsync();
 
-            FeedList = new ObservableCollection<FeedViewModel>();
+            FeedList = new TrulyObservableCollection<FeedViewModel>();
             FeedDataSource feedSrc = new FeedDataSource();
 
             foreach (var Feed in feedSrc.GetAllFeeds())
@@ -157,7 +158,7 @@ namespace SimpleRSSLiveTile
             _lastSelectedFeed = clickedFeed;
 
             //Navigate to another page quickly so we can re-navigate to FeedDetail if we're already on it
-            ContentFrame.Navigate(typeof(WelcomePage));
+            //ContentFrame.Navigate(typeof(WelcomePage));
             ContentFrame.Navigate(typeof(FeedDetailPage), clickedFeed);
         }
 
@@ -185,6 +186,31 @@ namespace SimpleRSSLiveTile
 
             ContentFrame.GoBack();
             return true;
+        }
+
+        //Update the viewmodel list depending on the the contents of the FeedDataSource.
+        public void UpdateFeedList()
+        {
+            //Can't clear the feedList as that'd break the NavigationView
+            FeedDataSource feedSrc = new FeedDataSource();
+
+            //Clear deleted feeds' viewmodels
+            foreach (FeedViewModel feedVM in FeedList)
+            {
+                if (!feedSrc.FeedExists(feedVM.Id.ToString()))
+                    FeedList.Remove(feedVM);
+                else
+                    feedVM.Update();
+            }
+
+            //Add viewmodels for newly created feeds
+            foreach (var Feed in feedSrc.GetAllFeeds().Where(x => FeedList.Count(y => y.Id == x.GetId()) == 0))
+            { 
+                FeedViewModel viewModel = FeedViewModel.FromFeed(Feed);
+
+                if (!FeedList.Contains(viewModel))
+                    FeedList.Add(viewModel);
+            }
         }
 
         private async void DeleteSelectedFeed(object sender, RoutedEventArgs e)

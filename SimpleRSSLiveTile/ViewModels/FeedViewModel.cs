@@ -37,12 +37,8 @@ namespace SimpleRSSLiveTile.ViewModels
             var viewModel = new FeedViewModel();
 
             viewModel.Id = item.GetId();
-            viewModel.Title = item.GetTitle();
-            viewModel.URL = item.GetURL();
-            viewModel.TileXML = item.GetTileXML();
-            viewModel.FaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.GetFeedDomain(); //Low effort
-            viewModel.usingAtomIcon = item.IsUsingAtomIcon();
             viewModel.Articles = new ObservableCollection<Article>();
+            viewModel.Update();
 
             return viewModel;
 
@@ -57,6 +53,35 @@ namespace SimpleRSSLiveTile.ViewModels
             }
         }
 
+        internal void Update()
+        {
+            FeedDataSource feedSrc = new FeedDataSource();
+            Feed item = feedSrc.GetFeedById(Id);
+
+            Boolean propChanged = false;
+
+            if (item.GetTitle() != Title)
+            {
+                Title = item.GetTitle();
+                propChanged = true;
+            }
+
+            String newFaviconURL = "http://www.google.com/s2/favicons?domain_url=" + item.GetFeedDomain(); //Low effort
+
+            if (FaviconURL != newFaviconURL)
+            {
+                FaviconURL = newFaviconURL;
+                propChanged = true;
+            }
+
+            //Those props aren't visible and don't trigger notifications
+            URL = item.GetURL();
+            usingAtomIcon = item.IsUsingAtomIcon();
+            TileXML = item.GetTileXML();
+
+            if (propChanged)
+                NotifyPropertyChanged();
+        }
     }
 
 }

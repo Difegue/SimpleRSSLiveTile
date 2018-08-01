@@ -240,43 +240,20 @@ namespace SimpleRSSLiveTile
             FeedViewModel viewModel = (FeedViewModel)e.Parameter;
             Feed = FeedViewModel.FromFeed(feedDB.GetFeedById(viewModel.Id));
 
-            var backStack = Frame.BackStack;
-            var backStackCount = backStack.Count;
-
-            /*if (backStackCount > 0)
-            {
-                var masterPageEntry = backStack[backStackCount - 1];
-                backStack.RemoveAt(backStackCount - 1);
-
-                // Doctor the navigation parameter for the master page so it
-                // will show the correct item in the side-by-side view.
-                var modifiedEntry = new PageStackEntry(
-                    masterPageEntry.SourcePageType,
-                    Feed.Id,
-                    masterPageEntry.NavigationTransitionInfo
-                    );
-                backStack.Add(modifiedEntry);
-            }
-
-            // Register for hardware and software back request from the system
-            SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
-            systemNavigationManager.BackRequested += DetailPage_BackRequested;
-            if (!ShouldGoToWideState())
-                systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;*/
-
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-
-           /* SystemNavigationManager systemNavigationManager = SystemNavigationManager.GetForCurrentView();
-            systemNavigationManager.BackRequested -= DetailPage_BackRequested;
-            systemNavigationManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;*/
         }
 
 
         private async void PageRoot_Loaded(object sender, RoutedEventArgs e)
+        {
+            CreatePageContent();
+        }
+
+        private async void CreatePageContent()
         {
             // Realize the main page content.
             FindName("RootPanel");
@@ -321,7 +298,7 @@ namespace SimpleRSSLiveTile
                 readButton.Visibility = Visibility.Visible;
             }
 
-                
+
 
             FeedWaiting.Visibility = Visibility.Collapsed;
             //We rebuilt the UI, now fade it in
@@ -332,7 +309,6 @@ namespace SimpleRSSLiveTile
             {
                 RootPanel.Visibility = Visibility.Visible;
             });
-
         }
 
         public static void AnimateDouble(DependencyObject target, string path, double to, double duration, Action onCompleted = null)
