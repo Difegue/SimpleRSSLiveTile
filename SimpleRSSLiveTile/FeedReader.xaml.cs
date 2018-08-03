@@ -32,7 +32,6 @@ namespace SimpleRSSLiveTile
     /// </summary>
     public class Article
     {
-        private Uri goodUri;
 
         public string Title { get; set; }
         public Uri URL { get; set; }

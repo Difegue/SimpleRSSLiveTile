@@ -36,7 +36,7 @@
         <TextBlock Margin="20,30,0,0" Style="{ThemeResource SubtitleTextBlockStyle}">👌👺 License</TextBlock>
 
         <TextBlock Margin="20,10,10,0" Style="{ThemeResource CaptionTextBlockStyle}" TextWrapping="Wrap" HorizontalAlignment="Left" >
-                         Copyright 2017 Difegue <LineBreak/> <LineBreak/>
+                         Copyright 2018 Difegue <LineBreak/> <LineBreak/>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:<LineBreak/><LineBreak/>
 

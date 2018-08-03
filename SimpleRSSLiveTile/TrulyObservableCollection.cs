@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SimpleRSSLiveTile
 {
+    // ObservableCollection that raises events when properties of the items in the collection change.
     public sealed class TrulyObservableCollection<T> : ObservableCollection<T>
     where T : INotifyPropertyChanged
     {

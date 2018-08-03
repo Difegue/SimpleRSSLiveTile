@@ -12,7 +12,6 @@ namespace RSSDataTypes.Data
         private Windows.Storage.ApplicationDataContainer feedDB; 
 
         //Binds to the App DataStorage to get Feeds easily. Handles translation from the Feed object to a Composite Storage Value.
-
         public FeedDataSource()
         {
             feedDB = Windows.Storage.ApplicationData.Current.LocalSettings;

@@ -40,6 +40,7 @@
                             You'll be able to pin your Live Tile if the XML is valid.</TextBlock>
 
                 <HyperlinkButton NavigateUri="https://docs.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-create-adaptive-tiles">Official Adaptive Tile Documentation</HyperlinkButton>
+                <HyperlinkButton NavigateUri="ms-windows-store://pdp/?ProductId=9NBLGGH5XSL1">Official Microsoft Adaptive Tile Designer</HyperlinkButton>
             </StackPanel>
 
             <Flyout.FlyoutPresenterStyle>
@@ -95,9 +96,14 @@
             <!-- Don't realize our content by default. See PageRoot_Loaded. -->
             <StackPanel x:Name="RootPanel" x:DeferLoadStrategy="Lazy" Visibility="Collapsed">
 
-                <StackPanel Orientation="Horizontal">
-                    <Image x:Name="feedHQFavicon" Height="50" Margin="0,-30,0,0" Source="ms-appx:///Assets/Untitled.scale-200.png" />
-                    <TextBlock
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Image x:Name="feedHQFavicon" Height="50" Margin="0,-30,0,0" Source="ms-appx:///Assets/Untitled.scale-200.png" Grid.Column="0"/>
+                    <TextBlock Grid.Column="1"
                 Margin="20,0,0,40" 
                 FontSize="30"
                 Style="{ThemeResource TitleTextBlockStyle}"
@@ -105,7 +111,7 @@
                 TextWrapping="Wrap"
                 x:Name="feedTitle"
                 Text="{x:Bind Feed.Title, Mode=OneWay}" />
-                </StackPanel>
+                </Grid>
 
                 <TextBlock Text="URL to your RSS feed :"/>
                 <StackPanel x:Name="inputPanel" Orientation="Horizontal" Margin="0,15,0,20">
@@ -136,7 +142,7 @@
 
 
                 <StackPanel x:Name="customTileXML" Visibility="Visible">
-                    <HyperlinkButton FlyoutBase.AttachedFlyout="{StaticResource FormattingHelpFlyout}" Tapped="Show_FormattingHelp"  Content="Formatting Help" Margin="0,0,0,0" />
+                    <HyperlinkButton FlyoutBase.AttachedFlyout="{StaticResource FormattingHelpFlyout}" Tapped="Show_FormattingHelp"  Content="Formatting Syntax" Margin="0,0,0,0" />
                     <TextBox x:Name="customTileXMLContent" Text="" TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" HorizontalAlignment="Left" Margin="0,0,10,0" />
 
                     <TextBlock x:Name="customXMLOutput" Margin="0,5,0,0"/>

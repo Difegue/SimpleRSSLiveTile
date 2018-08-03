@@ -46,7 +46,6 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
@@ -61,7 +60,7 @@
                         TextWrapping="Wrap"
                         x:Name="feedTitle"
                         Text="{x:Bind Feed.Title, Mode=OneWay}" />
-                    <Button Grid.Column="3" Margin="20,0,0,30" x:Name="MainAppButton" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Click="MainAppButton_Click" Visibility="Collapsed">Go to Main App</Button>
+                    <Button Grid.Column="2" Margin="20,0,0,30" x:Name="MainAppButton" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Click="MainAppButton_Click" Visibility="Collapsed">Go to Main App</Button>
                 </Grid>
 
                 <ListView x:Name="articleList" ItemsSource="{x:Bind Feed.Articles}" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush }" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" IsItemClickEnabled="True" ItemClick="OpenArticle" >
