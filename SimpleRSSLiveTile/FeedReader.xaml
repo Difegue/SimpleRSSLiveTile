@@ -21,7 +21,22 @@
             </Grid.RowDefinitions>
 
             <ProgressRing VerticalAlignment="Center" Grid.Row="0" IsActive="True" Foreground="{ThemeResource SystemAccentColor}" Height="100" Width="100" />
-            <TextBlock VerticalAlignment="Center" Grid.Row="0" HorizontalAlignment="Center" FontSize="25" Margin="0,150,0,0">Loading your feed<LineBreak/>Please wait warmly.</TextBlock>
+            <TextBlock VerticalAlignment="Center" Grid.Row="0" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,150,0,0">Loading your feed<LineBreak/>Please wait warmly.</TextBlock>
+        </Grid>
+
+        <Grid x:Name="FeedBroken" Grid.Row="0" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE17A;" 
+                       FontSize="100"  HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0"
+                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+            
+            <TextBlock VerticalAlignment="Center" Grid.Row="0" HorizontalAlignment="Center" 
+                       Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,150,0,0">Couldn't load your feed.
+                <LineBreak/>Check your Internet connection.</TextBlock>
         </Grid>
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
@@ -40,13 +55,13 @@
                     <TextBlock
                         Grid.Column="1"
                         Margin="20,0,0,40" 
-                        FontSize="30"
                         Style="{ThemeResource TitleTextBlockStyle}"
+                        FontSize="30"
                         HorizontalAlignment="Left" 
                         TextWrapping="Wrap"
                         x:Name="feedTitle"
                         Text="{x:Bind Feed.Title, Mode=OneWay}" />
-                    <Button Grid.Column="3" Margin="20,0,0,30" x:Name="MainAppButton" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Click="MainAppButton_Click">Go to Main App</Button>
+                    <Button Grid.Column="3" Margin="20,0,0,30" x:Name="MainAppButton" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Click="MainAppButton_Click" Visibility="Collapsed">Go to Main App</Button>
                 </Grid>
 
                 <ListView x:Name="articleList" ItemsSource="{x:Bind Feed.Articles}" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush }" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" IsItemClickEnabled="True" ItemClick="OpenArticle" >

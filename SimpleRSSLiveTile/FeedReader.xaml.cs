@@ -108,8 +108,10 @@ namespace SimpleRSSLiveTile
             FeedWaiting.Visibility = Visibility.Collapsed;
             RootPanel.Visibility = Visibility.Visible;
 
-        }
+            if (CoreApplication.GetCurrentView() == CoreApplication.MainView)
+                MainAppButton.Visibility = Visibility.Visible;
 
+        }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -125,9 +127,15 @@ namespace SimpleRSSLiveTile
             //We build the feed's article list
             SyndicationFeed feedData = await f.GetFeedDataAsync();
 
-            // Grab feed items and add them to the tiles.
-            foreach (var item in feedData.Items)
+            if (feedData == null)
             {
+                //Feed invalid, display error message
+                FeedWaiting.Visibility = Visibility.Collapsed;
+                FeedBroken.Visibility = Visibility.Visible;
+
+            }
+            else foreach (var item in feedData.Items) // Grab feed items and add them to the tiles.
+                {
                 //Try getting a valid URL for the item.
                 Uri goodUri = item.ItemUri ?? item.Links.Select(l => l.Uri).FirstOrDefault();
 
@@ -150,9 +158,6 @@ namespace SimpleRSSLiveTile
                 Feed.Articles.Add(a);
             }
 
-            if (CoreApplication.GetCurrentView() != CoreApplication.MainView)
-                MainAppButton.Visibility = Visibility.Collapsed;
-
         }
 
         private void MainAppButton_Click(object sender, RoutedEventArgs e)
@@ -160,6 +165,7 @@ namespace SimpleRSSLiveTile
             //If the window is a subwindow, just close it, the main app is still open. Otherwise, navigate to the main page.
             if (CoreApplication.GetCurrentView() == CoreApplication.MainView)
                 Frame.Navigate(typeof(NewMainPage));
+                
         }
 
         private async void OpenArticle(object sender, ItemClickEventArgs e)

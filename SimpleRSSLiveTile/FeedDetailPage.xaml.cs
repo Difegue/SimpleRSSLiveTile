@@ -138,7 +138,7 @@ namespace SimpleRSSLiveTile
                 symbolOutput.Symbol = Symbol.Cancel;
                 symbolOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
                 greetingOutput.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
-                greetingOutput.Text = "Invalid RSS Feed.";
+                greetingOutput.Text = "Couldn't load the given URL, or said URL isn't a RSS Feed.";
                 Progress.Visibility = Visibility.Collapsed;
             }
         }
