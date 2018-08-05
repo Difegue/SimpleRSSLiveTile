@@ -94,7 +94,7 @@ namespace SimpleRSSLiveTile
                 bool result = await ShowReplaceDialogAsync(title);
                 if (result)
                 {
-                    feedStorage.DeleteFeed(Int32.Parse(idFeed));
+                    await feedStorage.DeleteFeed(Int32.Parse(idFeed));
                     feedStorage.SetFeed(example);
                     return true;
                 }

@@ -1,1 +1,1 @@
-C:\Users\Patchouli\Desktop\RSSLT\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_1.5.0.0\SimpleRSSLiveTile_1.5.0.0_x86_x64_arm.appxbundle
+C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0\SimpleRSSLiveTile_2.0.0.0_x86_x64_arm.appxbundle

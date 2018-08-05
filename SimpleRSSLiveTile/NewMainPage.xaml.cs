@@ -233,7 +233,7 @@ namespace SimpleRSSLiveTile
                     //deleteFeedButton.Visibility = Visibility.Collapsed;
                     FeedDataSource feedSrc = new FeedDataSource();
                     feedSrc.GetFeedById(_lastSelectedFeed.Id).UnpinTileAsync();
-                    feedSrc.DeleteFeed(_lastSelectedFeed.Id);
+                    await feedSrc.DeleteFeed(_lastSelectedFeed.Id);
                     FeedList.Remove((FeedViewModel)NavView.SelectedItem);
 
                     _lastSelectedFeed = null;

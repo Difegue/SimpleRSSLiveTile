@@ -93,7 +93,7 @@ namespace SimpleRSSLiveTile
             await f.UpdateFeedArticlesAsync();
 
             //Start an update for the tile while we're at it
-            f.UpdateTileAsync();
+            await f.UpdateTileAsync();
 
             //We build the feedVM's article list from the cached feed articles
             IList<Article> art = await feedDB.GetCachedArticles(f);

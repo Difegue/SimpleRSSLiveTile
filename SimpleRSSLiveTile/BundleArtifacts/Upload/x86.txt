@@ -1,0 +1,2 @@
+MainPackage=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\x86\Release\Upload\SimpleRSSLiveTile_2.0.0.0_x86.appx
+SymbolPackage=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\x86\Release\Upload\SimpleRSSLiveTile_2.0.0.0\SimpleRSSLiveTile_2.0.0.0_x86.appxsym

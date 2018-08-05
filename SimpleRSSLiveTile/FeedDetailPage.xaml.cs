@@ -250,10 +250,10 @@ namespace SimpleRSSLiveTile
 
         private async void PageRoot_Loaded(object sender, RoutedEventArgs e)
         {
-            CreatePageContent();
+            await CreatePageContent();
         }
 
-        private async void CreatePageContent()
+        private async Task CreatePageContent()
         {
             // Realize the main page content.
             FindName("RootPanel");
@@ -353,7 +353,7 @@ namespace SimpleRSSLiveTile
             {
                 FeedDataSource feedSrc = new FeedDataSource();
                 feedSrc.GetFeedById(Feed.Id).UnpinTileAsync();
-                feedSrc.DeleteFeed(Feed.Id);
+                await feedSrc.DeleteFeed(Feed.Id);
             }
         }
 

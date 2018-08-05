@@ -17,12 +17,12 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>SimpleRSSLiveTile_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>SimpleRSSLiveTile_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>5C0AEE23D77E66AC007E3F11949750FF294AA751</PackageCertificateThumbprint>
-    <AppxPackageDir>C:\Users\Patchouli\Desktop\</AppxPackageDir>
+    <PackageCertificateThumbprint>7C2ECBF5F2F9655DE13A4391C4E6A51BBCA337B3</PackageCertificateThumbprint>
+    <AppxPackageDir>C:\Users\Vincent\Documents\</AppxPackageDir>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
