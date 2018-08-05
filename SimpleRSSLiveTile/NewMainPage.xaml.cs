@@ -271,8 +271,8 @@ namespace SimpleRSSLiveTile
             FeedDataSource feedDB = new FeedDataSource();
 
             //Unique ID. 
-            int i = 1337;
             Random random = new Random();
+            int i = random.Next();
 
             //It's like I'm really programming pomf.se
             while (feedDB.FeedExists(i.ToString()))

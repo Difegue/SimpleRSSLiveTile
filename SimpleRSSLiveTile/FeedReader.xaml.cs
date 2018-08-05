@@ -27,38 +27,7 @@ using Windows.Web.Syndication;
 
 namespace SimpleRSSLiveTile
 {
-    /// <summary>
-    /// Simple Class for representing a Feed's articles.
-    /// </summary>
-    public class Article
-    {
-
-        public string Title { get; set; }
-        public Uri URL { get; set; }
-        public string Summary { get; set; }
-        public DateTimeOffset PublishedDate { get; set; }
-        public string PublishedDateFormatted => PublishedDate.ToString("dd/MM/yyyy    h:mm tt").ToUpper();
-
-        public Article()
-        {
-            Title = "Feed";
-            URL = new Uri("");
-            PublishedDate = new DateTimeOffset(DateTime.Now);
-        }
-
-        public Article(ISyndicationText title, ISyndicationText summary, DateTimeOffset publishedDate, Uri baseUri)
-        {
-            if (title != null)
-                Title = title.Text;
-            if (summary != null)
-                Summary = summary.Text;
-
-            PublishedDate = publishedDate;
-            URL = baseUri;
-        }
-
-    }
-
+    
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -112,7 +81,7 @@ namespace SimpleRSSLiveTile
 
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -120,41 +89,22 @@ namespace SimpleRSSLiveTile
             Feed f = feedDB.GetFeedById(int.Parse((String)e.Parameter));
             Feed = FeedViewModel.FromFeed(f);
 
+            //Try to update feed articles
+            await f.UpdateFeedArticlesAsync();
+
             //Start an update for the tile while we're at it
             f.UpdateTileAsync();
 
-            //We build the feed's article list
-            SyndicationFeed feedData = await f.GetFeedDataAsync();
+            //We build the feedVM's article list from the cached feed articles
+            IList<Article> art = await feedDB.GetCachedArticles(f);
+            art.ToList().ForEach( i => Feed.Articles.Add(i));
 
-            if (feedData == null)
+            if (Feed.Articles.Count == 0)
             {
-                //Feed invalid, display error message
+                //No articles, display error message
                 FeedWaiting.Visibility = Visibility.Collapsed;
                 FeedBroken.Visibility = Visibility.Visible;
 
-            }
-            else foreach (var item in feedData.Items) // Grab feed items and add them to the tiles.
-                {
-                //Try getting a valid URL for the item.
-                Uri goodUri = item.ItemUri ?? item.Links.Select(l => l.Uri).FirstOrDefault();
-
-                Article a = new Article(item.Title, item.Summary, item.PublishedDate, goodUri);
- 
-                //Strip all XML/HTML tags.
-                HtmlDocument doc = new HtmlDocument();
-                if (a.Title != null)
-                {
-                    doc.LoadHtml(a.Title);
-                    a.Title = doc.DocumentNode.InnerText;
-                }
-
-                if (a.Summary != null)
-                {
-                    doc.LoadHtml(a.Summary);
-                    a.Summary = doc.DocumentNode.InnerText;
-                }
-
-                Feed.Articles.Add(a);
             }
 
         }

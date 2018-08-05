@@ -15,6 +15,7 @@ using Windows.UI.StartScreen;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Syndication;
 using HtmlAgilityPack;
+using System.Collections.ObjectModel;
 
 namespace RSSDataTypes.Data
 {
@@ -118,13 +119,6 @@ namespace RSSDataTypes.Data
             return to;
         }
 
-        public IAsyncOperation<SyndicationFeed> GetFeedDataAsync()
-        {
-            Task<SyndicationFeed> load = GetFeedData();
-            IAsyncOperation<SyndicationFeed> to = load.AsAsyncOperation();
-            return to;
-        }
-
         //Returns the main domain of the feed. Used for favicon retrieval.
         public string GetFeedDomain()
         {
@@ -202,6 +196,43 @@ namespace RSSDataTypes.Data
             return useAtomIcon;
         }
 
+        public IAsyncOperation<bool> UpdateFeedArticlesAsync()
+        {
+            Task<bool> load = UpdateFeedArticles();
+            IAsyncOperation<bool> to = load.AsAsyncOperation();
+            return to;
+        }
+
+        //Tries refreshing the feed's stored Article collection.
+        private async Task<bool> UpdateFeedArticles()
+        {
+            SyndicationFeed feedData = await GetFeedData();
+
+            if (feedData == null)
+            {
+                //Feed invalid or no internet connection, do nothing
+                return false;
+            }
+            else
+            {
+                feedTitle = feedData.Title.Text == null ? feedData.BaseUri.ToString() : feedData.Title.Text;
+                List<Article> cachedArticles = new List<Article>();
+
+                foreach (var item in feedData.Items) // Grab feed items and add them to the tiles.
+                {
+                    //Try getting a valid URL for the item.
+                    Uri goodUri = item.ItemUri ?? item.Links.Select(l => l.Uri).FirstOrDefault();
+
+                    Article a = new Article(item, goodUri);
+
+                    cachedArticles.Add(a);
+                }
+
+                //Save feed content
+                await new FeedDataSource().SaveCachedArticles(this, cachedArticles);
+                return true;
+            }
+        }
 
         //Pins Tile to Start Menu.
         private async Task<bool> PinTile()
@@ -249,8 +280,9 @@ namespace RSSDataTypes.Data
         //Updates this feed's live tile, if it exists.
         private async Task<bool> UpdateTile()
         {
-            SyndicationFeed feedData = await GetFeedData();
-            XmlDocument tileXml = await BuildTileXMLAsync(feedData);
+            await UpdateFeedArticles();
+            
+            XmlDocument tileXml = await BuildTileXMLAsync();
             TileNotification tileNotification = new TileNotification(tileXml);
 
             TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
@@ -329,7 +361,7 @@ namespace RSSDataTypes.Data
         }
 
         //Build a tile XML from the template we have and the feed's items.
-        private async Task<XmlDocument> BuildTileXMLAsync(SyndicationFeed feed)
+        private async Task<XmlDocument> BuildTileXMLAsync()
         {
             String cmplteTile = null;
             ResourceLoader rl = new ResourceLoader();
@@ -338,7 +370,9 @@ namespace RSSDataTypes.Data
             for (int i = 0; i < 4; i++)
                 imageForItem[i] = "";
 
-            if (feed == null)
+            IList<Article> cachedArticles = await new FeedDataSource().GetCachedArticles(this);
+
+            if (cachedArticles.Count == 0)
             {
                 //Return a bogus tile saying the feed is not valid. 
                 cmplteTile = rl.GetString("ErrorTileXML");
@@ -366,53 +400,25 @@ namespace RSSDataTypes.Data
                     tileXml.LoadXml(xmlBeforeDataInsertion);
 
                     //Edit tile title
-                    XmlElement feedTitle = (XmlElement)tileXml.GetElementsByTagName("visual")[0];
-
-                    String feedTitleText = feed.Title.Text == null ? feed.BaseUri.ToString() : feed.Title.Text;
-                    feedTitle.SetAttribute("displayName", feedTitleText);
+                    XmlElement feedTitleXml = (XmlElement)tileXml.GetElementsByTagName("visual")[0];
+                    feedTitleXml.SetAttribute("displayName", feedTitle);
 
                     // Grab feed items and add them to the tiles.
-                    foreach (var item in feed.Items)
-                    {
-                        //item.Summary;
-                        var title = item.Title;
-                        var desc = item.Summary;
+                    foreach (Article item in cachedArticles)
+                    {   
+                        string titleText = item.Title == null ? "" : item.Title;
+                        string titleDesc = item.Summary == null ? "" : item.Summary;
 
-                        string titleText = title == null ? String.Empty : title.Text;
-                        string titleDesc = desc == null ? String.Empty : desc.Text;
-                        
                         titleText = System.Net.WebUtility.HtmlDecode(titleText);
                         titleDesc = System.Net.WebUtility.HtmlDecode(titleDesc);
-                        
-                        //Try getting an image for this item.
-                        string imgUrl = GetImageFromItem(titleDesc);
-                        if (imgUrl == "")
-                        {
-                            //If we couldn't find an image in the Summary, we look in the Content as well before giving up.
-                            var content = item.Content;
-
-                            string titleContent = content == null ? String.Empty : content.Text;
-                            titleContent = System.Net.WebUtility.HtmlDecode(titleContent);
-                            imgUrl = GetImageFromItem(titleContent);
-                        }
-                        imageForItem[itemCount] = imgUrl;
-
-
-                        //Strip all XML/HTML tags.
-                        HtmlDocument doc = new HtmlDocument();
-                        doc.LoadHtml(titleText);
-                        titleText = doc.DocumentNode.InnerText;
-                        doc.LoadHtml(titleDesc);
-                        titleDesc = doc.DocumentNode.InnerText;
-
-                        titleText = titleText.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
 
                         if (titleText.Length > 150) //A tile can't show more than 134 characters on a line (TileWide), so we limit each item to 150 chars. Also helps keeping the xml payload under 5kb.
                             titleText = titleText.Substring(0, 150);
 
-
                         if (titleDesc.Length > 150)
                             titleDesc = titleDesc.Substring(0, 150);
+
+                        imageForItem[itemCount] = item.ImageURL;
 
                         XmlNodeList nodeListTitle = tileXml.GetElementsByTagName(textElementName[itemCount]);
                         XmlNodeList nodeListDesc = tileXml.GetElementsByTagName(descElementName[itemCount]);
@@ -472,26 +478,6 @@ namespace RSSDataTypes.Data
 
             return finalXml;
 
-        }
-
-        //Use HtmlAgilityPack to find the first <img> tag, and return its src attribute.
-        private string GetImageFromItem(string html)
-        {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(html);
-            string ret;
-
-            try
-            {
-                HtmlAttribute att = doc.DocumentNode.ChildNodes.FindFirst("img").Attributes["src"];
-                ret = att.Value;
-            }
-            catch (Exception)
-            {
-                ret = "";
-            }
-
-            return ret;
         }
 
     }
