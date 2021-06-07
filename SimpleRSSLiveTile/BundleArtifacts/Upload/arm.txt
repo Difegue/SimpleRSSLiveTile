@@ -1,6 +1,0 @@
-MainPackage=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0_ARM.appx
-SymbolPackage=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0\SimpleRSSLiveTile_2.0.0.0_ARM.appxsym
-ResourcePack=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0_scale-100.appx
-ResourcePack=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0_scale-125.appx
-ResourcePack=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0_scale-150.appx
-ResourcePack=C:\Users\Vincent\Source\Repos\SimpleRSSLiveTile\SimpleRSSLiveTile\bin\ARM\Release\Upload\SimpleRSSLiveTile_2.0.0.0_scale-400.appx

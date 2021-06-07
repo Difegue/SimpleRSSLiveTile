@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleRSSLiveTile", "SimpleRSSLiveTile\SimpleRSSLiveTile.csproj", "{C6B01A35-25CC-4761-A857-DFB6BCDF2197}"
 EndProject
@@ -34,6 +34,8 @@ Global
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Debug|x86.Build.0 = Debug|x86
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Debug|x86.Deploy.0 = Debug|x86
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|Any CPU.ActiveCfg = Release|x86
+		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|Any CPU.Build.0 = Release|x86
+		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|Any CPU.Deploy.0 = Release|x86
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|ARM.ActiveCfg = Release|ARM
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|ARM.Build.0 = Release|ARM
 		{C6B01A35-25CC-4761-A857-DFB6BCDF2197}.Release|ARM.Deploy.0 = Release|ARM
