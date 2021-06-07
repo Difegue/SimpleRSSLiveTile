@@ -64,7 +64,7 @@ namespace RSSDataTypes.Data
                 Summary = doc.DocumentNode.InnerText;
             }
 
-            Title = Title.Replace(System.Environment.NewLine, ""); //Strip newlines from titles for easier reading
+            Title = Title.Replace(Environment.NewLine, ""); //Strip newlines from titles for easier reading
 
             PublishedDate = item.PublishedDate;
             URL = baseUri;
@@ -73,20 +73,21 @@ namespace RSSDataTypes.Data
         //Use HtmlAgilityPack to find the first <img> tag, and return its src attribute.
         private string GetImageFromItem(string html)
         {
-            string ret;
+            var ret = "";
+
+            if (html == null) return ret;
 
             try
             {
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(html);
-                
-                HtmlAttribute att = doc.DocumentNode.ChildNodes.FindFirst("img").Attributes["src"];
-                ret = att.Value;
+
+                var imgNode = doc.DocumentNode.ChildNodes.FindFirst("img");
+
+                if (imgNode != null)
+                    ret = imgNode.Attributes["src"].Value;
             }
-            catch (Exception)
-            {
-                ret = "";
-            }
+            catch (Exception)  { }
 
             return ret;
         }

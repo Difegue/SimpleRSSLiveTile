@@ -117,8 +117,8 @@ namespace SimpleRSSLiveTile
             // Extend acrylic onto title bar.
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
-            titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            //titleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemAltHighColor"];
 
         }
 

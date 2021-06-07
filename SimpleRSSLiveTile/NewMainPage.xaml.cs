@@ -4,48 +4,21 @@ using RSSDataTypes.Data;
 using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Services.Store;
-using Windows.Storage;
-using Windows.System;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 namespace SimpleRSSLiveTile
 {
 
-    //ViewModel for the NavView Header, which also contains the custom Titlebar.
-    public class CustomTitleBar
-    {
-        public SolidColorBrush TitleBarBackground { get; set; }
-        public SolidColorBrush TitleBarForeground { get; set; }
-
-        public CustomTitleBar()
-        {
-            TitleBarBackground = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
-            TitleBarForeground = new SolidColorBrush((Color)Application.Current.Resources["SystemAltHighColor"]);
-        }
-    }
-
-    public sealed partial class NewMainPage : Page
+    public sealed partial class NewMainPage : Windows.UI.Xaml.Controls.Page
     {
 
         private FeedViewModel _lastSelectedFeed;
@@ -53,8 +26,6 @@ namespace SimpleRSSLiveTile
 
         private StoreContext context = null;
         private string donationStoreID = "9nblggh50zp6";
-
-        private CustomTitleBar titleBar = new CustomTitleBar();
 
         public NewMainPage()
         {
@@ -122,27 +93,8 @@ namespace SimpleRSSLiveTile
             //Update reference to mainPage in GlobalReference
             GlobalMainPageReference.mainPage = this;
 
-            Window.Current.Activated += UpdateTitleBar;
-            //Set our custom titleBar as the header so colors propagate properly.
-            NavView.Header = titleBar;
-
             ApplicationViewTitleBar systemTitleBar = ApplicationView.GetForCurrentView().TitleBar;
             systemTitleBar.ButtonInactiveBackgroundColor = (Color)Application.Current.Resources["SystemAltMediumColor"];
-        }
-
-        private void UpdateTitleBar(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
-        {
-
-            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
-            {
-                titleBar.TitleBarBackground.Color = (Color)Application.Current.Resources["SystemAltMediumColor"];
-                titleBar.TitleBarForeground.Color = Color.FromArgb(255, 153, 153, 153);
-            } else
-            {
-                titleBar.TitleBarBackground.Color = (Color)Application.Current.Resources["SystemAccentColor"];
-                titleBar.TitleBarForeground.Color = (Color)Application.Current.Resources["SystemAltHighColor"];
-            }
-           
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -158,7 +110,6 @@ namespace SimpleRSSLiveTile
             _lastSelectedFeed = clickedFeed;
 
             //Navigate to another page quickly so we can re-navigate to FeedDetail if we're already on it
-            //ContentFrame.Navigate(typeof(WelcomePage));
             ContentFrame.Navigate(typeof(FeedDetailPage), clickedFeed);
         }
 
@@ -245,25 +196,6 @@ namespace SimpleRSSLiveTile
             }
         }
 
-        private async void OpenDonate(object sender, RoutedEventArgs e)
-        {
-            StorePurchaseResult result = await context.RequestPurchaseAsync(donationStoreID);
-
-            switch (result.Status)
-            {
-                case StorePurchaseStatus.AlreadyPurchased:
-                    AcknowledgeDonation();
-                    break;
-
-                case StorePurchaseStatus.Succeeded:
-                    AcknowledgeDonation();
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
         //Add a new blank feed, and refresh the page so it appears in the list.
         private void AddFeed(object sender, RoutedEventArgs e)
         {
@@ -289,23 +221,8 @@ namespace SimpleRSSLiveTile
 
         private async void SendFeedback(object sender, RoutedEventArgs e)
         {
-            var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
-            emailMessage.Subject = "Feedback for RSS Live Tiles";
-
-            string feedList = "RSS Feeds used : \n";
-            FeedDataSource feedSrc = new FeedDataSource();
-            foreach (var Feed in feedSrc.GetAllFeeds())
-            {
-                feedList = feedList + Feed.GetURL() + "\n";
-            }
-
-            emailMessage.Body = feedList;
-
-            var emailRecipient = new Windows.ApplicationModel.Email.EmailRecipient("sugoi@cock.li");
-            emailMessage.To.Add(emailRecipient);
-            
-
-            await Windows.ApplicationModel.Email.EmailManager.ShowComposeNewEmailAsync(emailMessage);
+            var launcher = StoreServicesFeedbackLauncher.GetDefault();
+            await launcher.LaunchAsync();
         }
 
         private void OpenExamples(object sender, RoutedEventArgs e)
@@ -313,8 +230,27 @@ namespace SimpleRSSLiveTile
             ContentFrame.Navigate(typeof(ExamplePage));
         }
 
+        private async void OpenDonate(object sender, RoutedEventArgs e)
+        {
+            StorePurchaseResult result = await context.RequestPurchaseAsync(donationStoreID);
+
+            switch (result.Status)
+            {
+                case StorePurchaseStatus.AlreadyPurchased:
+                    AcknowledgeDonation();
+                    break;
+
+                case StorePurchaseStatus.Succeeded:
+                    AcknowledgeDonation();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         private void OpenAbout(object sender, RoutedEventArgs e)
-        { 
+        {
             ContentFrame.Navigate(typeof(AboutPage));
         }
 

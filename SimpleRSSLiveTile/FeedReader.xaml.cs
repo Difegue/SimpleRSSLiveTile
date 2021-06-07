@@ -3,25 +3,14 @@ using RSSDataTypes.Data;
 using SimpleRSSLiveTile.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI;
-using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using Windows.Web.Syndication;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -85,28 +74,35 @@ namespace SimpleRSSLiveTile
         {
             base.OnNavigatedTo(e);
 
-            // Parameter is feed ID
-            Feed f = feedDB.GetFeedById(int.Parse((String)e.Parameter));
-            Feed = FeedViewModel.FromFeed(f);
-
-            //Try to update feed articles
-            await f.UpdateFeedArticlesAsync();
-
-            //Start an update for the tile while we're at it
-            await f.UpdateTileAsync();
-
-            //We build the feedVM's article list from the cached feed articles
-            IList<Article> art = await feedDB.GetCachedArticles(f);
-            art.ToList().ForEach( i => Feed.Articles.Add(i));
-
-            if (Feed.Articles.Count == 0)
+            try
             {
-                //No articles, display error message
+                // Parameter is feed ID
+                Feed f = feedDB.GetFeedById(int.Parse((String)e.Parameter));
+                Feed = FeedViewModel.FromFeed(f);
+
+                //Try to update feed articles
+                await f.UpdateFeedArticlesAsync();
+
+                //Start an update for the tile while we're at it
+                await f.UpdateTileAsync();
+
+                //We build the feedVM's article list from the cached feed articles
+                IList<Article> art = await feedDB.GetCachedArticles(f);
+                art.ToList().ForEach(i => Feed.Articles.Add(i));
+
+                if (Feed.Articles.Count == 0)
+                {
+                    //No articles, display error message
+                    FeedWaiting.Visibility = Visibility.Collapsed;
+                    FeedBroken.Visibility = Visibility.Visible;
+                }
+            } 
+            catch (Exception)
+            {
+                // display error message
                 FeedWaiting.Visibility = Visibility.Collapsed;
                 FeedBroken.Visibility = Visibility.Visible;
-
-            }
-
+            }            
         }
 
         private void MainAppButton_Click(object sender, RoutedEventArgs e)

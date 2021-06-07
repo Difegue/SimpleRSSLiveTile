@@ -104,13 +104,6 @@ namespace RSSDataTypes.Data
 
         }
 
-        public IAsyncOperation<bool> UpdateTileAsync()
-        {
-            Task<bool> load = UpdateTile();
-            IAsyncOperation<bool> to = load.AsAsyncOperation();
-            return to;
-        }
-
 
         public IAsyncOperation<string> GetFeedTitleAsync()
         {
@@ -133,11 +126,11 @@ namespace RSSDataTypes.Data
         }
 
         //Try loading the custom XML as a Tile to see if it's valid.
-        public Boolean TestTileXML()
+        public bool TestTileXML()
         {
             try
             {
-                XmlDocument tileXml = new Windows.Data.Xml.Dom.XmlDocument();
+                XmlDocument tileXml = new XmlDocument();
                 tileXml.LoadXml(customXml); //if we can't load the XML, it's probably not valid.
                 TileNotification tileTest = new TileNotification(tileXml);
 
@@ -148,7 +141,6 @@ namespace RSSDataTypes.Data
             }
 
             return true;
-
         }
 
         public string GetTitle()
@@ -271,24 +263,37 @@ namespace RSSDataTypes.Data
 
 
             //Save the unique tile ID and immediately try updating it with the XML we have
-            await UpdateTile();
+            await UpdateTileAsync();
 
             return true;
         }
 
+        public IAsyncOperation<bool> UpdateTileAsync()
+        {
+            Task<bool> load = UpdateTile();
+            IAsyncOperation<bool> to = load.AsAsyncOperation();
+            return to;
+        }
 
         //Updates this feed's live tile, if it exists.
         private async Task<bool> UpdateTile()
         {
-            await UpdateFeedArticles();
-            
-            XmlDocument tileXml = await BuildTileXMLAsync();
-            TileNotification tileNotification = new TileNotification(tileXml);
+            try
+            {
+                await UpdateFeedArticles();
 
-            TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
-            secondaryTileUpdater.Update(tileNotification);
+                XmlDocument tileXml = await BuildTileXMLAsync();
+                TileNotification tileNotification = new TileNotification(tileXml);
 
-            return true;
+                TileUpdater secondaryTileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(feedId.ToString());
+                secondaryTileUpdater.Update(tileNotification);
+
+                return true;
+            } 
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         //Get the RSS Feed's title, or the URL if it doesn't have one.
@@ -461,7 +466,7 @@ namespace RSSDataTypes.Data
             }
 
             for (int i = 0; i<4; i++)
-                cmplteTile = cmplteTile.Replace("#img"+(i+1)+"#", imageForItem[i]);
+                cmplteTile = cmplteTile.Replace("#img"+(i+1)+"#", System.Security.SecurityElement.Escape(imageForItem[i]));
 
             //Reload the XML after corrections have been made
             XmlDocument finalXml = new Windows.Data.Xml.Dom.XmlDocument();

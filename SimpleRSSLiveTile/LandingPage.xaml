@@ -2,27 +2,51 @@
     x:Class="SimpleRSSLiveTile.LandingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SimpleRSSLiveTile"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:SimpleRSSLiveTile"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel VerticalAlignment="Center" >
+    <StackPanel VerticalAlignment="Center">
 
-        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECA5;" Margin="-5,0,0,0" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5" Foreground="{ThemeResource SystemAccentColor}" >
+        <FontIcon
+            Margin="-5,0,0,0"
+            HorizontalAlignment="Center"
+            FontFamily="Segoe MDL2 Assets"
+            Foreground="{ThemeResource SystemAccentColor}"
+            Glyph="&#xECA5;"
+            RenderTransformOrigin="0.5,0.5">
             <FontIcon.RenderTransform>
-                <CompositeTransform ScaleX="4" ScaleY="4"/>
+                <CompositeTransform ScaleX="4" ScaleY="4" />
             </FontIcon.RenderTransform>
         </FontIcon>
-        <TextBlock HorizontalAlignment="Center" Margin="0,30,0,0"  Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="Wrap" Foreground="{ThemeResource SystemAccentColor}">Welcome !</TextBlock>
-        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap">
-                     Your feeds are on the left bar.</TextBlock>
-        <TextBlock HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"> 
-                    No feeds yet? Add one by clicking on the matching button up here!
+        <TextBlock
+            Margin="0,30,0,0"
+            HorizontalAlignment="Center"
+            FontWeight="SemiBold"
+            Foreground="{ThemeResource SystemAccentColor}"
+            Style="{StaticResource SubheaderTextBlockStyle}"
+            TextWrapping="Wrap">
+            Hello!
         </TextBlock>
-        <TextBlock HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"> 
-                    You might also want to check out the examples.
-
+        <TextBlock
+            Margin="0,10,0,0"
+            HorizontalAlignment="Center"
+            Style="{StaticResource SubtitleTextBlockStyle}"
+            TextWrapping="Wrap">
+            Your feeds are on the left bar.
+        </TextBlock>
+        <TextBlock
+            HorizontalAlignment="Center"
+            Style="{StaticResource SubtitleTextBlockStyle}"
+            TextWrapping="Wrap">
+            No feeds yet? Add one by clicking on the matching button up here!
+        </TextBlock>
+        <TextBlock
+            HorizontalAlignment="Center"
+            Style="{StaticResource SubtitleTextBlockStyle}"
+            TextWrapping="Wrap">
+            You might also want to check out the examples.
         </TextBlock>
 
     </StackPanel>

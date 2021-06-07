@@ -2,12 +2,13 @@
     x:Class="SimpleRSSLiveTile.NewMainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SimpleRSSLiveTile"
-    xmlns:viewmodels="using:SimpleRSSLiveTile.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:SimpleRSSLiveTile"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    NavigationCacheMode="Enabled">
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:viewmodels="using:SimpleRSSLiveTile.ViewModels"
+    NavigationCacheMode="Enabled"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <DataTemplate x:Key="NavigationMenuItemDataTemplate" x:DataType="viewmodels:FeedViewModel">
@@ -22,20 +23,25 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="1" Text="{x:Bind Title}" Style="{ThemeResource BaseTextBlockStyle}" MaxLines="1"/>
+                <TextBlock
+                    Grid.Column="1"
+                    MaxLines="1"
+                    Style="{ThemeResource BaseTextBlockStyle}"
+                    Text="{x:Bind Title}" />
 
                 <TextBlock
-                    Text="{x:Bind URL}"
-                     Grid.Column="1" 
-                     Grid.Row="1" 
+                    Grid.Row="1"
+                    Grid.Column="1"
                     MaxLines="1"
                     Style="{ThemeResource CaptionTextBlockStyle}"
-                   />
+                    Text="{x:Bind URL}" />
 
-                <Image Margin="0,0,20,0" Grid.RowSpan="2" VerticalAlignment="Center">
+                <Image
+                    Grid.RowSpan="2"
+                    Margin="0,0,20,0"
+                    VerticalAlignment="Center">
                     <Image.Source>
-                        <BitmapImage x:Name="feedFavicon"
-                         UriSource="{x:Bind FaviconURL}"/>
+                        <BitmapImage x:Name="feedFavicon" UriSource="{x:Bind FaviconURL}" />
                     </Image.Source>
                 </Image>
 
@@ -43,84 +49,82 @@
         </DataTemplate>
     </Page.Resources>
 
-    <NavigationView x:Name="NavView"
-                    ItemInvoked="NavView_ItemInvoked"
-                    Loaded="NavView_Loaded"
-                    IsSettingsVisible="False"
-                    MenuItemsSource="{x:Bind FeedList}" 
-                    MenuItemTemplate="{StaticResource NavigationMenuItemDataTemplate}">
+    <muxc:NavigationView
+        x:Name="NavView"
+        IsSettingsVisible="False"
+        ItemInvoked="NavView_ItemInvoked"
+        Loaded="NavView_Loaded"
+        MenuItemTemplate="{StaticResource NavigationMenuItemDataTemplate}"
+        MenuItemsSource="{x:Bind FeedList}"
+        PaneTitle="RSS Live Tiles">
 
-        <NavigationView.HeaderTemplate>
-            <DataTemplate x:DataType="local:CustomTitleBar">
-                <Grid Margin="0,0,0,0" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+        <muxc:NavigationView.Header>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="33" />
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+            <CommandBar
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="Transparent"
+                DefaultLabelPosition="Right">
 
-                    <StackPanel Orientation="Horizontal" Background="{x:Bind TitleBarBackground}"  Grid.Row="0" Grid.ColumnSpan="2">
-                        <SymbolIcon Symbol="PostUpdate" VerticalAlignment="Center" Foreground="{x:Bind TitleBarForeground}" Margin="10,0,0,0"/>
-                        <TextBlock Text="RSS Live Tiles" VerticalAlignment="Center" Foreground="{x:Bind TitleBarForeground}" Margin="10,-1,0,0"/>
-                    </StackPanel>
+                <AppBarButton
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Click="AddFeed"
+                    Icon="Add"
+                    Label="Add Feed" />
+                <AppBarButton
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Click="DeleteSelectedFeed"
+                    Icon="Delete"
+                    Label="Delete Feed" />
 
-                    <CommandBar Grid.Row="1" Grid.Column="1"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            DefaultLabelPosition="Right">
+            </CommandBar>
 
-                        <AppBarButton Icon="Add" Label="Add Feed" Click="AddFeed" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
-                        <AppBarButton Icon="Delete" Label="Delete Feed" Click="DeleteSelectedFeed" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+        </muxc:NavigationView.Header>
 
-                    </CommandBar>
-                </Grid>
-            </DataTemplate>
-        </NavigationView.HeaderTemplate>
-        
         <Frame x:Name="ContentFrame">
             <Frame.ContentTransitions>
                 <TransitionCollection>
-                    <NavigationThemeTransition/>
+                    <NavigationThemeTransition />
                 </TransitionCollection>
             </Frame.ContentTransitions>
         </Frame>
 
-        <NavigationView.PaneFooter>
+        <muxc:NavigationView.PaneFooter>
             <StackPanel Orientation="Vertical">
 
-                <NavigationViewItem Content="Examples" PointerReleased="OpenExamples" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;"  />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                <muxc:NavigationViewItem Content="Examples" PointerReleased="OpenExamples">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEBD2;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
 
-                <NavigationViewItem Content="Feedback" PointerReleased="SendFeedback" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;"  />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                <muxc:NavigationViewItem Content="Feedback" PointerReleased="SendFeedback">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED15;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
 
-                <NavigationViewItem x:Name="donateButton" Content="Donate" PointerReleased="OpenDonate" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC09;"  />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                <muxc:NavigationViewItem
+                    x:Name="donateButton"
+                    Content="Donate"
+                    PointerReleased="OpenDonate">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC09;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
 
-                <NavigationViewItem Content="About" PointerReleased="OpenAbout" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;"  />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                <muxc:NavigationViewItem Content="About" PointerReleased="OpenAbout">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC05;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
 
             </StackPanel>
-        </NavigationView.PaneFooter>
+        </muxc:NavigationView.PaneFooter>
 
-    </NavigationView>
+    </muxc:NavigationView>
 
 </Page>
-    
-    
+
